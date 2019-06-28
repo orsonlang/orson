@@ -748,7 +748,7 @@ typedef void               *refVoid;          //  Ref to VOID.
 typedef void               (*refVoidFunc)();  //  Ref to a VOID function.
 typedef struct sigaction   sigAction;         //  A response to a signal.
 typedef time_t             seconds;           //  A length of time.
-typedef struct sigaltstack sigAltStack;       //  Alternate stack descriptor.
+typedef stack_t            sigAltStack;       //  Alternate stack descriptor.
 typedef struct stat        status;            //  Holds the status of a file.
 
 //  Structure types in alphabetical order where possible. DEGREEs and SIZEs are
