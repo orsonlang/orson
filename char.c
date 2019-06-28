@@ -627,7 +627,7 @@ int getChar(refStream input)
             if ((b11000000 & byte) == b10000000)
             { word = (word << 6) | (b00111111 & byte);
               byte = getc(input);
-              if ((b11000000 & byte) == 10000000)
+              if ((b11000000 & byte) == b10000000)
               { return (word << 6) | (b00111111 & byte); }}}}}
       break; }
     case b11111110 ... b11111111:
