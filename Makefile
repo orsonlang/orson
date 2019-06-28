@@ -1,7 +1,6 @@
-#
 #  ORSON/MAKEFILE. Compile, install, uninstall Orson.
 #
-#  Copyright (C) 2015 James B. Moen.
+#  Copyright (C) 2015, 2019 James B. Moen and Jade Michael Thornton
 #
 #  This  program is free  software: you  can redistribute  it and/or  modify it
 #  under the terms  of the GNU General Public License as  published by the Free
@@ -37,12 +36,17 @@ mandir = $(prefix)/man/man1
 #  GCC options for compiling Orson. It will also compile with -O1, with -O2, or
 #  with both -O3 and -fkeep-inline-functions. Other optimizations may work too.
 
-options = -g -Wall
+options ?= -g -Wall
+CC ?= gcc
 
-#  ALL. Compile Orson from C source files, leaving it in the current directory.
-#  You need not be root to do this.
+#  ALL. Compile Orson from C source files, leaving it in the current
+#  directory. You need not be root to do this.
 
-all:
+all: orson
+
+# TODO it would be better to keep the object files around
+.PHONY: orson
+orson: clean
 	gcc -c $(options) buffer.c
 	gcc -c $(options) cast.c
 	gcc -c $(options) char.c
@@ -102,44 +106,10 @@ clean:
 #
 #  You must be root to do this.
 
-install:
+install: orson
 	mkdir -p $(bindir)
 	mkdir -p $(mandir)
 	mkdir -p $(libdir)
-	gcc -c $(options) buffer.c
-	gcc -c $(options) cast.c
-	gcc -c $(options) char.c
-	gcc -c $(options) coerce.c
-	gcc -c $(options) debug.c
-	gcc -c $(options) declare.c
-	gcc -c $(options) emit.c
-	gcc -c $(options) error.c
-	gcc -c $(options) expression.c
-	gcc -c $(options) file.c
-	gcc -c $(options) form.c
-	gcc -c $(options) forward.c
-	gcc -c $(options) generic.c
-	gcc -c $(options) hunk.c
-	gcc -c $(options) layer.c
-	gcc -c $(options) load.c
-	gcc -c $(options) main.c
-	gcc -c $(options) make.c
-	gcc -c $(options) match.c
-	gcc -c $(options) name.c
-	gcc -c $(options) path.c
-	gcc -c $(options) prelude.c
-	gcc -c $(options) program.c
-	gcc -c $(options) set.c
-	gcc -c $(options) signal.c
-	gcc -c $(options) size.c
-	gcc -c $(options) statement.c
-	gcc -c $(options) string.c
-	gcc -c $(options) subtype.c
-	gcc -c $(options) transform.c
-	gcc -c $(options) type.c
-	gcc -c $(options) utility.c
-	gcc *.o -o orson
-	rm -f *.o
 	mv orson $(bindir)
 	chown root $(bindir)/orson
 	chmod go-w+rx $(bindir)/orson
@@ -161,8 +131,7 @@ install:
 #  Note that BIN DIRECTORY and MAN DIRECTORY will still exist. You must be root
 #  to do this.
 
-uninstall:
-	rm -f Out.c a.out orson *.o
+uninstall: clean
 	rm -f $(bindir)/orson
 	rm -f $(mandir)/orson.1
 	rm -f -r $(libdir)
