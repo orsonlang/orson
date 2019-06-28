@@ -17,6 +17,8 @@
 //  with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#define version          "0.14.6."           //  Number of this version.
+
 #include <errno.h>      //  Error numbers.
 #include <float.h>      //  Constants with real types.
 #include <limits.h>     //  Constants with integer types.
@@ -139,7 +141,6 @@
 #define vaEnd            va_end              //  Because it's ugly.
 #define vaList           va_list             //  Because it's ugly.
 #define vaStart          va_start            //  Because it's ugly.
-#define version          "0.14.6."           //  Number of this version.
 
 //  Slot accessor macros, for STRUCT pointers. Some are never used. They may be
 //  on either side of "=".
