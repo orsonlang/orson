@@ -1,0 +1,736 @@
+<!-- Created by Bracy 0.4 on Monday, January 1, 2018 at 7:24 PM CST -->
+<html>
+ <head>
+  <title>
+   Orson Compiler
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black;
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Orson Compiler</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   August 6, 2017
+  </p>
+  <blockquote>
+   <p align="justify">
+    But no matter what your opinion of the <small>CC</small>, it is damn
+    useful.
+   </p>
+   <p align="right">
+    <a href="#var1992">
+     [<small>VAR</small> 1992]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The Orson compiler <i>Orson</i> is written in G<small>NU</small> C
+   <a href="#sta2008">
+    [<small>STA</small> 2008],
+   </a>
+   and is intended to run under Unix-like systems, such as
+   G<small>NU</small>/Linux. It needs only the G<small>NU</small> C
+   Library
+   <a href="#loo2014">
+    [<small>LOO</small> 2014],
+   </a>
+   and may work with other standard C libraries as well. Actually Orson
+   isn&rsquo;t a compiler, but a translator. It converts programs written in
+   Orson
+   <a href="#moe2017">
+    [<small>MOE</small> 2017]
+   </a>
+   to equivalent G<small>NU</small> C programs, then calls the
+   G<small>NU</small> C compiler <small>GCC</small> to compile them.
+   The following files contain G<small>NU</small> C source code for the
+   Orson compiler. The allegedly interesting ones are marked with
+   &lsquo;&#10007;&rsquo;.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="buffer.c">
+        <tt>buffer.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write to a stream through a buffer.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="cast.c">
+        <tt>cast.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Explicitly change the types of expressions.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="char.c">
+        <tt>char.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Operations on characters.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="coerce.c">
+        <tt>coerce.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Implicitly change the types of expressions.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="debug.c">
+        <tt>debug.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Functions for debugging.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="declare.c">
+        <tt>declare.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Encrypt Orson declarations as C declarations.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="emit.c">
+        <tt>emit.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write commonly used pieces of C code.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="error.c">
+        <tt>error.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Scold the user about errors.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="expression.c">
+        <tt>expression.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Translate Orson expressions to C expressions.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="file.c">
+        <tt>file.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Record which files have been loaded.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="form.c">
+        <tt>form.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Operations on forms and form types.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="forward.c">
+        <tt>forward.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Resolve forward references.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="generic.c">
+        <tt>generic.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Operations on types that contain <i>gen</i>
+       names.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="global.h">
+        <tt>global.h</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Global definitions.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="hunk.c">
+        <tt>hunk.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Heap management and garbage collection. &#10007;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="layer.c">
+        <tt>layer.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Operations on binder trees and layers.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="load.c">
+        <tt>load.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Load a C or Orson source file. &#10007;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="main.c">
+        <tt>main.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Main program.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="make.c">
+        <tt>make.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Make various objects.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="match.c">
+        <tt>match.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Operations on matches.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="name.c">
+        <tt>name.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Operations on names.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="path.c">
+        <tt>path.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Operations on file pathnames.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="prelude.c">
+        <tt>prelude.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Initialize names.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="program.c">
+        <tt>program.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Translate an Orson program to C.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="set.c">
+        <tt>set.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Sets of small nonnegative integers as bit strings.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="signal.c">
+        <tt>signal.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Handle Unix signals.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="size.c">
+        <tt>size.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Functions about sizes of types.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="statement.c">
+        <tt>statement.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Translate Orson clauses to C statements.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="string.c">
+        <tt>string.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Operations on Orson strings.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="subtype.c">
+        <tt>subtype.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Test if one type is a subtype of another. &#10007;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="transform.c">
+        <tt>transform.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Transform expressions. &#10007;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="type.c">
+        <tt>type.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Operations on types.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="utility.c">
+        <tt>utility.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Utility functions.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   These files contain documentation and other supporting material.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./Makefile">
+        <tt>Makefile</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Compile, install, uninstall Orson.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./README">
+        <tt>README</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Short text version of <tt>Readme.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Readme.by">
+        <tt>Readme.by&nbsp;&nbsp;</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Bracy source for <tt>Readme.html.</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Readme.html">
+        <tt>Readme.html&nbsp;</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;What you&rsquo;re reading now.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="orson.1">
+        <tt>orson.1&nbsp;&nbsp;&nbsp;</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Manual page for Orson.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   Both the Orson compiler and the C programs it produces require features of
+   G<small>NU</small> C that might not be present in other dialects of C.
+   These features include arbitrary length names, <tt>auto</tt> arrays
+   whose lengths are computed at run time, hexadecimal floating point
+   constants, nested functions, statement expressions, zero length arrays, and
+   the &lsquo;<tt>?:</tt>&rsquo; operator. This may not be a complete
+   list.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Orson compiler is available for free,
+   under the terms of the G<small>NU</small> General Public License
+   (<small>GPL</small>) version 3.
+  </p>
+  <hr />
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="loo2014">
+      </a>
+      [<small>LOO</small>&nbsp;2014]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Sandra Loosemore, Richard M. Stallman, Roland McGrath, Andrew Oram,
+      Ulrich Drepper. <i>The G<small>NU</small> C Library Reference
+      Manual.</i> Free Software Foundation. Boston, Massachusetts. 2014.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2017">
+      </a>
+      [<small>MOE</small>&nbsp;2017]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2017.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="sta2008">
+      </a>
+      [<small>STA</small>&nbsp;2008]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Richard M. Stallman, the G<small>CC</small> Developer Community.
+      &lsquo;&lsquo;Using and Porting the G<small>NU</small> Compiler
+      Collection.&rsquo;&rsquo; Free Software Foundation. Boston,
+      Massachusetts. 2008.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="var1992">
+      </a>
+      [<small>VAR</small>&nbsp;1992]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      John Varley. <i>Steel Beach.</i> G. P. Putnam&rsquo;s Sons. New
+      York, New York. 1992. Page 411.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

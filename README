@@ -1,0 +1,63 @@
+                                 ORSON COMPILER
+
+                                 James B. Moen
+                                 June 29, 2015
+
+The Orson  compiler Orson is  written in  GNU C, and  is intended to  run under
+Unix-like systems, such as GNU/Linux.  It needs only the GNU C Library, and may
+work with other standard C libraries as well.  Actually Orson isn’t a compiler,
+but a  translator. It converts  programs written in  Orson to equivalent  GNU C
+programs,  then calls  the GNU  C  compiler GCC  to compile  them. These  files
+contain GNU  C source  code for the  Orson compiler. The  allegedly interesting
+ones are marked with ‘✗’.
+
+    buffer.c      Write to a stream through a buffer.
+    cast.c        Explicitly change the types of expressions.
+    char.c        Operations on characters.
+    coerce.c      Implicitly change the types of expressions.
+    debug.c       Functions for debugging.
+    declare.c     Encrypt Orson declarations as C declarations.
+    emit.c        Write commonly used pieces of C code.
+    error.c       Scold the user about errors.
+    expression.c  Translate Orson expressions to C expressions.
+    file.c        Record which files have been loaded.
+    form.c        Operations on forms and form types.
+    forward.c     Resolve forward references.
+    generic.c     Operations on types that contain gen names.
+    global.h      Global definitions.
+    hunk.c        Heap management and garbage collection. ✗
+    layer.c       Operations on binder trees and layers.
+    load.c        Load a C or Orson source file. ✗
+    main.c        Main program.
+    make.c        Make various objects.
+    match.c       Operations on matches.
+    name.c        Operations on names.
+    path.c        Operations on file pathnames.
+    prelude.c     Initialize names.
+    program.c     Translate an Orson program to C.
+    set.c         Sets of small nonnegative integers as bit strings.
+    signal.c      Handle Unix signals.
+    size.c        Functions about sizes of types.
+    statement.c   Translate Orson clauses to C statements.
+    string.c      Operations on Orson strings.
+    subtype.c     Test if one type is a subtype of another. ✗
+    transform.c   Transform expressions. ✗
+    type.c        Operations on types.
+    utility.c     Utility functions.
+
+These files contain documentation and other supporting material.
+
+    Makefile      Compile, install, uninstall Orson.
+    README        What you're reading now.
+    Readme.by     Bracy source for Readme.html.
+    Readme.html   Long HTML version of README.
+    orson.1       Manual page for Orson.
+
+Both the Orson compiler and the  C programs it produces require features of GNU
+C that  might not  be present in  other dialects  of C. These  features include
+arbitrary length  names, auto  arrays whose lengths  are computed at  run time,
+hexadecimal floating point  constants, nested functions, statement expressions,
+zero length arrays, and the ‘?:’ operator. This may not be a complete list.
+
+The Orson  compiler is available for free,  under the terms of  the GNU General
+Public License (GPL) version 3.

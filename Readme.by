@@ -1,0 +1,223 @@
+{title Orson Compiler}
+
+{center
+ {b Orson Compiler}
+
+ James B. Moen
+ August 6, 2017}
+
+{narrow
+ {justify
+   But no matter what your opinion of the {c cc,} it is damn useful.}
+ {right
+  {goto var1992 {c [var 1992]}}}}
+
+{justify
+  The Orson compiler {i Orson} is written in {c Gnu} C
+  {goto sta2008 {c [sta 2008],}} and is intended to run under Unix-like
+  systems, such as {c Gnu}/Linux.
+  It needs only the {c Gnu} C Library {goto loo2014 {c [loo 2014],}} and may
+  work with other standard C libraries as well.
+  Actually Orson isn't a compiler, but a translator.
+  It converts programs written in Orson {goto moe2017 {c [moe 2017]}} to
+  equivalent {c Gnu} C programs, then calls the {c Gnu} C compiler {c gcc} to
+  compile them.
+  The following files contain {c Gnu} C source code for the Orson compiler.
+  The allegedly interesting ones are marked with `✗'.}
+
+{narrow
+ {layout
+  {row
+   {left {goto {t buffer.c}}}
+   {left \ \ \ Write to a stream through a buffer.}}
+  {row
+   {left {goto {t cast.c}}}
+   {left \ \ \ Explicitly change the types of expressions.}}
+  {row
+   {left {goto {t char.c}}}
+   {left \ \ \ Operations on characters.}}
+  {row
+   {left {goto {t coerce.c}}}
+   {left \ \ \ Implicitly change the types of expressions.}}
+  {row
+   {left {goto {t debug.c}}}
+   {left \ \ \ Functions for debugging.}}
+  {row
+   {left {goto {t declare.c}}}
+   {left \ \ \ Encrypt Orson declarations as C declarations.}}
+  {row
+   {left {goto {t emit.c}}}
+   {left \ \ \ Write commonly used pieces of C code.}}
+  {row
+   {left {goto {t error.c}}}
+   {left \ \ \ Scold the user about errors.}}
+  {row
+   {left {goto {t expression.c}}}
+   {left \ \ \ Translate Orson expressions to C expressions.}}
+  {row
+   {left {goto {t file.c}}}
+   {left \ \ \ Record which files have been loaded.}}
+  {row
+   {left {goto {t form.c}}}
+   {left \ \ \ Operations on forms and form types.}}
+  {row
+   {left {goto {t forward.c}}}
+   {left \ \ \ Resolve forward references.}}
+  {row
+   {left {goto {t generic.c}}}
+   {left \ \ \ Operations on types that contain {i gen} names.}}
+  {row
+   {left {goto {t global.h}}}
+   {left \ \ \ Global definitions.}}
+  {row
+   {left {goto {t hunk.c}}}
+   {left \ \ \ Heap management and garbage collection. ✗}}
+  {row
+   {left {goto {t layer.c}}}
+   {left \ \ \ Operations on binder trees and layers.}}
+  {row
+   {left {goto {t load.c}}}
+   {left \ \ \ Load a C or Orson source file. ✗}}
+  {row
+   {left {goto {t main.c}}}
+   {left \ \ \ Main program.}}
+  {row
+   {left {goto {t make.c}}}
+   {left \ \ \ Make various objects.}}
+  {row
+   {left {goto {t match.c}}}
+   {left \ \ \ Operations on matches.}}
+  {row
+   {left {goto {t name.c}}}
+   {left \ \ \ Operations on names.}}
+  {row
+   {left {goto {t path.c}}}
+   {left \ \ \ Operations on file pathnames.}}
+  {row
+   {left {goto {t prelude.c}}}
+   {left \ \ \ Initialize names.}}
+  {row
+   {left {goto {t program.c}}}
+   {left \ \ \ Translate an Orson program to C.}}
+  {row
+   {left {goto {t set.c}}}
+   {left \ \ \ Sets of small nonnegative integers as bit strings.}}
+  {row
+   {left {goto {t signal.c}}}
+   {left \ \ \ Handle Unix signals.}}
+  {row
+   {left {goto {t size.c}}}
+   {left \ \ \ Functions about sizes of types.}}
+  {row
+   {left {goto {t statement.c}}}
+   {left \ \ \ Translate Orson clauses to C statements.}}
+  {row
+   {left {goto {t string.c}}}
+   {left \ \ \ Operations on Orson strings.}}
+  {row
+   {left {goto {t subtype.c}}}
+   {left \ \ \ Test if one type is a subtype of another. ✗}}
+  {row
+   {left {goto {t transform.c}}}
+   {left \ \ \ Transform expressions. ✗}}
+  {row
+   {left {goto {t type.c}}}
+   {left \ \ \ Operations on types.}}
+  {row
+   {left {goto {t utility.c}}}
+   {left \ \ \ Utility functions.}}}}
+
+{justify
+  These files contain documentation and other supporting material.}
+
+{narrow
+ {layout
+  {row
+   {left {goto ./Makefile {t Makefile}}}
+   {left \ \ \ Compile, install, uninstall Orson.}}
+  {row
+   {left {goto ./README {t README}}}
+   {left \ \ \ Short text version of {t Readme.html}.}}
+  {row
+   {left {goto Readme.by {t Readme.by\ \ }}}
+   {left \ \ \ Bracy source for {t Readme.html.}}}
+  {row
+   {left {goto Readme.html {t Readme.html\ }}}
+   {left \ \ \ What you're reading now.}}
+  {row
+   {left {goto orson.1 {t orson.1\ \ \ }}}
+   {left \ \ \ Manual page for Orson.}}}}
+
+{justify
+  Both the Orson compiler and the C programs it produces require features of
+  {c Gnu} C that might not be present in other dialects of C.
+  These features include arbitrary length names, {t auto} arrays whose lengths
+  are computed at run time, hexadecimal floating point constants, nested
+  functions, statement expressions, zero length arrays, and the `{tt ?:}'
+  operator.
+  This may not be a complete list.
+
+  The Orson compiler is available for free, under the terms of the {c Gnu}
+  General Public License ({c gpl}) version 3.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label loo2014}
+   {c [loo\ 2014]\ \ }}
+  {justify
+    Sandra Loosemore, Richard M. Stallman, Roland McGrath, Andrew Oram,
+    Ulrich Drepper.
+    {i The {c Gnu} C Library Reference Manual.}
+    Free Software Foundation.
+    Boston, Massachusetts.
+    2014.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2017}
+   {c [moe\ 2017]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2017.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label sta2008}
+   {c [sta\ 2008]\ \ }}
+  {justify
+    Richard M. Stallman, the {c Gcc} Developer Community.
+    ``Using and Porting the {c Gnu} Compiler Collection.''
+    Free Software Foundation.
+    Boston, Massachusetts.
+    2008.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label var1992}
+   {c [var\ 1992]\ \ }}
+  {justify
+    John Varley.
+    {i Steel Beach.}
+    G. P. Putnam's Sons.
+    New York, New York.
+    1992.
+    Page 411.}}}
