@@ -40,9 +40,9 @@ COMPILER
 	Unix-like systems, such as GNU/Linux. It needs only the GNU C Library, and may
 	work with other standard C libraries as well. Actually Orson isn’t a compiler,
 	but a translator. It converts programs written in Orson to equivalent GNU C
-	programs, then calls the GNU C compiler GCC to compile them. These files
-	contain GNU C source code for the Orson compiler. The allegedly interesting
-	ones are marked with ‘✗’.
+	programs, then calls the GNU C compiler GCC to compile them. The src/
+	directory contains GNU C source code for the Orson compiler. The allegedly
+	interesting ones are marked with ‘✗’.
 
 		buffer.c      Write to a stream through a buffer.
 		cast.c        Explicitly change the types of expressions.
@@ -80,11 +80,11 @@ COMPILER
 
 	These files contain documentation and other supporting material.
 
-		Makefile      Compile, install, uninstall Orson.
-		README        What you're reading now.
-		Readme.by     Bracy source for Readme.html.
-		Readme.html   Long HTML version of README.
-		orson.1       Manual page for Orson.
+		Makefile        Compile, install, uninstall Orson.
+		README          What you're reading now.
+		doc/Readme.by   Bracy source for Readme.html.
+		doc/Readme.html Long HTML version of README.
+		doc/orson.1     Manual page for Orson.
 
 NOTE
 
@@ -101,9 +101,8 @@ NOTE
 COPYING
 
 	Orson and its accompanying programs are free software: you can redistribute
-	them and/or modify them under the terms of the GNU General Public License as
-	published by the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+	them and/or modify them under the terms of the GNU General Public License,
+	version 3, as published by the Free Software Foundation.
 
 	Orson and its accompanying programs are distributed in the hope that they will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
