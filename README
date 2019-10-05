@@ -1,211 +1,211 @@
 ORSON
 
-	Orson is a general-purpose programming language for individuals and small
-	groups. It emphasizes efficiency, expressiveness and extensibility, allowing
-	access to low-level representations of objects like that of the language C.
+  Orson is a general-purpose programming language for individuals and small
+  groups. It emphasizes efficiency, expressiveness and extensibility, allowing
+  access to low-level representations of objects like that of the language C.
 
-	Orson is a work-in-progress, being developed by James B. Moen and Jade Michael
-	Thornton. Orson is not an acronym, so it doesn’t appear in capital letters. it
-	is not named after any person, place, or thing.
+  Orson is a work-in-progress, being developed by James B. Moen and Jade Michael
+  Thornton. Orson is not an acronym, so it doesn’t appear in capital letters. it
+  is not named after any person, place, or thing.
 
-	Orson programs are made up of expressions that work in two phases, called
-	transformation and execution. During transformation, Orson applies forms to
-	produce new expressions. Forms are similar to macros, but are written in a
-	lexically scoped applicative language that can perform arbitrary computations.
-	During execution, Orson evaluates the expressions that were produced during
-	transformation.
+  Orson programs are made up of expressions that work in two phases, called
+  transformation and execution. During transformation, Orson applies forms to
+  produce new expressions. Forms are similar to macros, but are written in a
+  lexically scoped applicative language that can perform arbitrary computations.
+  During execution, Orson evaluates the expressions that were produced during
+  transformation.
 
-	Orson is currently implemented so that transformation occurs at compile time,
-	and execution occurs at run time. This allows writing with forms in an
-	abstract and general way, while still producing efficient programs. For
-	example, forms can be used as inline substitutes for some procedures. Most
-	operators are implemented as forms, so they can be redefined. Abstract data
-	types can be implemented as forms that take types as their arguments and
-	return types as their results. Control structures can be implemented as
-	higher-order forms that take forms as arguments and return forms as their
-	results.
+  Orson is currently implemented so that transformation occurs at compile time,
+  and execution occurs at run time. This allows writing with forms in an
+  abstract and general way, while still producing efficient programs. For
+  example, forms can be used as inline substitutes for some procedures. Most
+  operators are implemented as forms, so they can be redefined. Abstract data
+  types can be implemented as forms that take types as their arguments and
+  return types as their results. Control structures can be implemented as
+  higher-order forms that take forms as arguments and return forms as their
+  results.
 
-	Orson was developed on Intel x86 computers running Debian and Ubuntu
-	GNU/Linux, so it should work on similar systems. The Orson compiler itself is
-	written in GNU C, and requires only the GNU library. It translates Orson
-	source programs to equivalent GNU C programs, and then invokes the GNU C
-	compiler GCC to compile them. The Makefile will optionally use any compiler
-	specified by the ‘CC‘ environment variable, which is useful for override the
-	default ‘clang‘ compiler on macOS.
+  Orson was developed on Intel x86 computers running Debian and Ubuntu
+  GNU/Linux, so it should work on similar systems. The Orson compiler itself is
+  written in GNU C, and requires only the GNU library. It translates Orson
+  source programs to equivalent GNU C programs, and then invokes the GNU C
+  compiler GCC to compile them. The Makefile will optionally use any compiler
+  specified by the ‘CC‘ environment variable, which is useful for override the
+  default ‘clang‘ compiler on macOS.
 
 COMPILER
 
-	The Orson compiler Orson is written in GNU C, and is intended to run under
-	Unix-like systems, such as GNU/Linux. It needs only the GNU C Library, and may
-	work with other standard C libraries as well. Actually Orson isn’t a compiler,
-	but a translator. It converts programs written in Orson to equivalent GNU C
-	programs, then calls the GNU C compiler GCC to compile them. The src/
-	directory contains GNU C source code for the Orson compiler. The allegedly
-	interesting ones are marked with ‘✗’.
+  The Orson compiler Orson is written in GNU C, and is intended to run under
+  Unix-like systems, such as GNU/Linux. It needs only the GNU C Library, and may
+  work with other standard C libraries as well. Actually Orson isn’t a compiler,
+  but a translator. It converts programs written in Orson to equivalent GNU C
+  programs, then calls the GNU C compiler GCC to compile them. The src/
+  directory contains GNU C source code for the Orson compiler. The allegedly
+  interesting ones are marked with ‘✗’.
 
-		buffer.c      Write to a stream through a buffer.
-		cast.c        Explicitly change the types of expressions.
-		char.c        Operations on characters.
-		coerce.c      Implicitly change the types of expressions.
-		debug.c       Functions for debugging.
-		declare.c     Encrypt Orson declarations as C declarations.
-		emit.c        Write commonly used pieces of C code.
-		error.c       Scold the user about errors.
-		expression.c  Translate Orson expressions to C expressions.
-		file.c        Record which files have been loaded.
-		form.c        Operations on forms and form types.
-		forward.c     Resolve forward references.
-		generic.c     Operations on types that contain gen names.
-		global.h      Global definitions.
-		hunk.c        Heap management and garbage collection. ✗
-		layer.c       Operations on binder trees and layers.
-		load.c        Load a C or Orson source file. ✗
-		main.c        Main program.
-		make.c        Make various objects.
-		match.c       Operations on matches.
-		name.c        Operations on names.
-		path.c        Operations on file pathnames.
-		prelude.c     Initialize names.
-		program.c     Translate an Orson program to C.
-		set.c         Sets of small nonnegative integers as bit strings.
-		signal.c      Handle Unix signals.
-		size.c        Functions about sizes of types.
-		statement.c   Translate Orson clauses to C statements.
-		string.c      Operations on Orson strings.
-		subtype.c     Test if one type is a subtype of another. ✗
-		transform.c   Transform expressions. ✗
-		type.c        Operations on types.
-		utility.c     Utility functions.
+    buffer.c      Write to a stream through a buffer.
+    cast.c        Explicitly change the types of expressions.
+    char.c        Operations on characters.
+    coerce.c      Implicitly change the types of expressions.
+    debug.c       Functions for debugging.
+    declare.c     Encrypt Orson declarations as C declarations.
+    emit.c        Write commonly used pieces of C code.
+    error.c       Scold the user about errors.
+    expression.c  Translate Orson expressions to C expressions.
+    file.c        Record which files have been loaded.
+    form.c        Operations on forms and form types.
+    forward.c     Resolve forward references.
+    generic.c     Operations on types that contain gen names.
+    global.h      Global definitions.
+    hunk.c        Heap management and garbage collection. ✗
+    layer.c       Operations on binder trees and layers.
+    load.c        Load a C or Orson source file. ✗
+    main.c        Main program.
+    make.c        Make various objects.
+    match.c       Operations on matches.
+    name.c        Operations on names.
+    path.c        Operations on file pathnames.
+    prelude.c     Initialize names.
+    program.c     Translate an Orson program to C.
+    set.c         Sets of small nonnegative integers as bit strings.
+    signal.c      Handle Unix signals.
+    size.c        Functions about sizes of types.
+    statement.c   Translate Orson clauses to C statements.
+    string.c      Operations on Orson strings.
+    subtype.c     Test if one type is a subtype of another. ✗
+    transform.c   Transform expressions. ✗
+    type.c        Operations on types.
+    utility.c     Utility functions.
 
-	These files contain documentation and other supporting material.
+  These files contain documentation and other supporting material.
 
-		Makefile        Compile, install, uninstall Orson.
-		README          What you're reading now.
-		doc/Readme.by   Bracy source for Readme.html.
-		doc/Readme.html Long HTML version of README.
-		doc/orson.1     Manual page for Orson.
+    Makefile        Compile, install, uninstall Orson.
+    README          What you're reading now.
+    doc/Readme.by   Bracy source for Readme.html.
+    doc/Readme.html Long HTML version of README.
+    doc/orson.1     Manual page for Orson.
 
 LIBRARY
 
-	The Orson source files in the lib/ directory implement an Orson library. It is
-	not intended to be a standard library, rather a collection of methods that may
-	be helpful or interesting. Most of this Orson library is written in Orson,
-	although some files (like file.os) are false beards for functions from the GNU
-	C library. A few files (like width.os) use code written in GNU C.
+  The Orson source files in the lib/ directory implement an Orson library. It is
+  not intended to be a standard library, rather a collection of methods that may
+  be helpful or interesting. Most of this Orson library is written in Orson,
+  although some files (like file.os) are false beards for functions from the GNU
+  C library. A few files (like width.os) use code written in GNU C.
 
-		action.os     Operations on actions associated with Unix signals.
-		array.os      Make arrays with specified elements.
-		ascii.os      Operations on ASCII characters.
-		assert.os     Report an error if an expression is false.
-		bht.os        Bucketed hash tables.
-		bitset.os     Finite sets of small natural numbers.
-		break.os      Terminate an iterator.
-		buffer.os     Fixed length linear queues.
-		cdlc.os       Circular doubly linked chains.
-		cell.op       Operations on cells.
-		chain.os      Visit nodes in a linear linked chain.
-		chainsort.os  Sort a linear linked chain of execution objects.
-		char.os       Operations on characters.
-		choose.os     Generate combinations of a set.
-		command.os    Process Unix command line arguments.
-		complex.os    Complex arithmetic.
-		convert.os    Convert a string to an integer or a real.
-		count.os      Counting loops with breakers.
-		cxr.op        Compositions of cars and cdrs.
-		decode.os     Decode a string to a series of characters.
-		default.os    Default values of given types.
-		delimit.os    Visit delimited substrings of a string.
-		directory.os  Operations on Unix directories.
-		dotref.os     Dereference pointers to tuples using dots.
-		dump.os       Dynamic memory allocation with garbage collection.
-		dynamic.os    Dynamic memory allocation with explicit release.
-		empty.os      An empty program.
-		encode.os     Encode a character as a string.
-		environ.op    Communicate with the operating system.
-		exchange.os   Suzuki generalized variable exchanges.
-		fail.os       Terminate a program with an error message.
-		file.os       Input and output on file streams.
-		flq.os        Fixed length queues.
-		fls.os        Fixed length stacks.
-		formif.os     Simulate transformation-time ifs using forms.
-		headtail.os   Traverse arrays using pointers.
-		krig.os       Knuth’s random INT generator.
-		library.os    Get a string of library directory paths.
-		list.os       Operations on lists.
-		lslc.os       Linear singly linked chains.
-		making.os     Allocate an object from the heap and initialize it.
-		match.os      Test if a string is a member of a list of strings.
-		math.os       Mathematical constants and functions.
-		methcast.os   Cast forms to procedures and vice versa.
-		multi.os      Multi-dimensional arrays.
-		path.os       Operations on Unix pathnames.
-		permute.os    Generate permutations of an array.
-		plain.os      Operations on Orson plain names.
-		pmrig.os      Park-Miller Random INT Generator.
-		prelude.op    A standard prelude for Orson (version 0.14.6.).
-		prime.os      Test if an integer constant is prime.
-		primes.os     Generate a series of prime INTs.
-		quicksort.os  Quicksort the elements of an array.
-		roman.os      Convert small positive INTs to Roman numerals.
-		seed.os       Initialize a random number generator.
-		select.os     Simulate a case clause whose labels are strings.
-		sequence.op   Iterators that transform to sequences.
-		shell.os      Execute Unix shell commands.
-		signal.os     Operations on Unix signals and sets of signals.
-		skolem.os     Make Skolem types for debugging Orson.
-		string.op     Operations on strings.
-		subsup.os     Write integers using subscript and superscript digits.
-		text.os       Read characters and lines from a text file.
-		throw.os      Throw exceptions in response to Unix signals.
-		time.os       Operations on dates and times.
-		twirl.os      Write a twirling baton during a loop.
-		ubst.os       Unbalanced binary search trees.
-		uncaught.os   Catch otherwise uncaught exceptions.
-		vlq.os        Variable length queues.
-		vls.os        Variable length stacks.
-		width.os      Determine columns to write simple objects.
-		withify.os    Transform a list of terms into a with clause.
-		zillion.os    Translate INTs to English.
+    action.os     Operations on actions associated with Unix signals.
+    array.os      Make arrays with specified elements.
+    ascii.os      Operations on ASCII characters.
+    assert.os     Report an error if an expression is false.
+    bht.os        Bucketed hash tables.
+    bitset.os     Finite sets of small natural numbers.
+    break.os      Terminate an iterator.
+    buffer.os     Fixed length linear queues.
+    cdlc.os       Circular doubly linked chains.
+    cell.op       Operations on cells.
+    chain.os      Visit nodes in a linear linked chain.
+    chainsort.os  Sort a linear linked chain of execution objects.
+    char.os       Operations on characters.
+    choose.os     Generate combinations of a set.
+    command.os    Process Unix command line arguments.
+    complex.os    Complex arithmetic.
+    convert.os    Convert a string to an integer or a real.
+    count.os      Counting loops with breakers.
+    cxr.op        Compositions of cars and cdrs.
+    decode.os     Decode a string to a series of characters.
+    default.os    Default values of given types.
+    delimit.os    Visit delimited substrings of a string.
+    directory.os  Operations on Unix directories.
+    dotref.os     Dereference pointers to tuples using dots.
+    dump.os       Dynamic memory allocation with garbage collection.
+    dynamic.os    Dynamic memory allocation with explicit release.
+    empty.os      An empty program.
+    encode.os     Encode a character as a string.
+    environ.op    Communicate with the operating system.
+    exchange.os   Suzuki generalized variable exchanges.
+    fail.os       Terminate a program with an error message.
+    file.os       Input and output on file streams.
+    flq.os        Fixed length queues.
+    fls.os        Fixed length stacks.
+    formif.os     Simulate transformation-time ifs using forms.
+    headtail.os   Traverse arrays using pointers.
+    krig.os       Knuth’s random INT generator.
+    library.os    Get a string of library directory paths.
+    list.os       Operations on lists.
+    lslc.os       Linear singly linked chains.
+    making.os     Allocate an object from the heap and initialize it.
+    match.os      Test if a string is a member of a list of strings.
+    math.os       Mathematical constants and functions.
+    methcast.os   Cast forms to procedures and vice versa.
+    multi.os      Multi-dimensional arrays.
+    path.os       Operations on Unix pathnames.
+    permute.os    Generate permutations of an array.
+    plain.os      Operations on Orson plain names.
+    pmrig.os      Park-Miller Random INT Generator.
+    prelude.op    A standard prelude for Orson (version 0.14.6.).
+    prime.os      Test if an integer constant is prime.
+    primes.os     Generate a series of prime INTs.
+    quicksort.os  Quicksort the elements of an array.
+    roman.os      Convert small positive INTs to Roman numerals.
+    seed.os       Initialize a random number generator.
+    select.os     Simulate a case clause whose labels are strings.
+    sequence.op   Iterators that transform to sequences.
+    shell.os      Execute Unix shell commands.
+    signal.os     Operations on Unix signals and sets of signals.
+    skolem.os     Make Skolem types for debugging Orson.
+    string.op     Operations on strings.
+    subsup.os     Write integers using subscript and superscript digits.
+    text.os       Read characters and lines from a text file.
+    throw.os      Throw exceptions in response to Unix signals.
+    time.os       Operations on dates and times.
+    twirl.os      Write a twirling baton during a loop.
+    ubst.os       Unbalanced binary search trees.
+    uncaught.os   Catch otherwise uncaught exceptions.
+    vlq.os        Variable length queues.
+    vls.os        Variable length stacks.
+    width.os      Determine columns to write simple objects.
+    withify.os    Transform a list of terms into a with clause.
+    zillion.os    Translate INTs to English.
 
-	Some library files use GNU C types that are created by calling the form c's.
-	When c's creates a GNU C type, it must be given the alignment and size of that
-	type, since Orson cannot determine these for itself. Unfortunately, type
-	alignments and sizes can vary from one system to another, and those used here
-	may not be correct for your system. The Orson program Gas
-	(https://gitlab.com/orsonlang/gas) can show the alignment and size of any
-	named GNU C type. If there are problems, then you should use it to check type
-	alignments and sizes.
+  Some library files use GNU C types that are created by calling the form c's.
+  When c's creates a GNU C type, it must be given the alignment and size of that
+  type, since Orson cannot determine these for itself. Unfortunately, type
+  alignments and sizes can vary from one system to another, and those used here
+  may not be correct for your system. The Orson program Gas
+  (https://gitlab.com/orsonlang/gas) can show the alignment and size of any
+  named GNU C type. If there are problems, then you should use it to check type
+  alignments and sizes.
 
-	The Orson library also contains a few files that do not define methods for use
-	in other programs. Some (like makecxr.os and ranger.os) automatically
-	construct source files for the library.
+  The Orson library also contains a few files that do not define methods for use
+  in other programs. Some (like makecxr.os and ranger.os) automatically
+  construct source files for the library.
 
-		C/            A directory that contains GNU C code. Boring.
-		makecxr.os    Generate the Orson library file cxr.op.
-		ranger.os     Make arrays that clone GNU C’s wcwidth function.
+    C/            A directory that contains GNU C code. Boring.
+    makecxr.os    Generate the Orson library file cxr.op.
+    ranger.os     Make arrays that clone GNU C’s wcwidth function.
 
 NOTE
 
-	Both the Orson compiler and the C programs it produces require features of GNU
-	C that might not be present in other dialects of C. These features include
-	arbitrary length names, auto arrays whose lengths are computed at run time,
-	hexadecimal floating point constants, nested functions, statement expressions,
-	zero length arrays, and the ‘?:’ operator. This may not be a complete list.
+  Both the Orson compiler and the C programs it produces require features of GNU
+  C that might not be present in other dialects of C. These features include
+  arbitrary length names, auto arrays whose lengths are computed at run time,
+  hexadecimal floating point constants, nested functions, statement expressions,
+  zero length arrays, and the ‘?:’ operator. This may not be a complete list.
 
-	Orson’s documentation contain special characters. Without proper rendering
-	support, you may see question marks, boxes, or other symbols in place of these
-	characters.
+  Orson’s documentation contain special characters. Without proper rendering
+  support, you may see question marks, boxes, or other symbols in place of these
+  characters.
 
 COPYING
 
-	Orson, the Orson library and its accompanying programs are free software: you
-	can redistribute them and/or modify them under the terms of the GNU General
-	Public License, version 3, as published by the Free Software Foundation.
+  Orson, the Orson library and its accompanying programs are free software: you
+  can redistribute them and/or modify them under the terms of the GNU General
+  Public License, version 3, as published by the Free Software Foundation.
 
-	Orson and its accompanying programs are distributed in the hope that they will
-	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-	Public License for more details.
+  Orson and its accompanying programs are distributed in the hope that they will
+  be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+  Public License for more details.
 
-	You should have received a copy of the GNU General Public License along with
-	Orson and its accompanying programs. If not, see http://www.gnu.org/licenses/.
+  You should have received a copy of the GNU General Public License along with
+  Orson and its accompanying programs. If not, see http://www.gnu.org/licenses/.
