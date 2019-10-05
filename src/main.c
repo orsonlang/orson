@@ -1,6 +1,7 @@
 //
 //  ORSON/MAIN. Main program.
 //
+//  Copyright (C) 2019 James B. Moen and Jade Michael Thornton.
 //  Copyright (C) 2016 James B. Moen.
 //
 //  This program  is free  software: you can  redistribute it and/or  modify it
@@ -135,7 +136,7 @@ int main(int count, refRefChar strings)
 //  Did the user ask who we are?
 
   if (who)
-  { fprintf(stdout, "Orson to GNU C translator " version "\n"); }
+  { fprintf(stdout, "Orson compiler " version "\n"); }
 
 //  If there are arguments left on the command line, then they are the names of
 //  source files, so compile them. Start by initializing subsystems, which must
