@@ -1,0 +1,1297 @@
+!
+!  ORSON/LIB/PRELUDE. A standard prelude for Orson (version 0.14.6.).
+!
+!  Copyright © 2018 James B. Moen.
+!
+!  This  program is free  software: you  can redistribute  it and/or  modify it
+!  under the terms  of the GNU General Public License as  published by the Free
+!  Software Foundation,  either version 3 of  the License, or  (at your option)
+!  any later version.
+!
+!  This program is distributed in the  hope that it will be useful, but WITHOUT
+!  ANY  WARRANTY;  without even  the  implied  warranty  of MERCHANTABILITY  or
+!  FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU General  Public License for
+!  more details.
+!
+!  You should have received a copy of the GNU General Public License along with
+!  this program.  If not, see <http://www.gnu.org/licenses/>.
+!
+
+!  For descriptions of forms defined in this file, see the "Revised⁻¹ Report on
+!  the Algorithmic Language Orson," or any version with a higher exponent.
+
+(load ''lib.C.setjmp:c'')  !  Nonlocal jumps.
+(load ''lib.C.stdlib:c'')  !  General utilities.
+
+(prog
+
+!  The first few equates define what we need to bootstrap everything else. Some
+!  names may seem unbound, but they've been magically bound by Orson.
+
+  bool   :− int0       !  A fake Boolean type.
+  char   :− char1      !  The default character type.
+  false  :− 0          !  A fake Boolean constant.
+  int    :− int2       !  The default integer type.
+  nil    :− ?nil       !  A pointer to no object.
+  real   :− real1      !  The default real type.
+  stream :− ref File   !  The file stream type.
+  string :− row char0  !  The string type.
+  true   :− 1          !  Another fake Boolean constant.
+  ϵ      :− ''''       !  The empty string.
+
+!  VERSION. Make sure we have a compatible version of Orson.
+
+  version :−
+   (form (string r) void:
+     ?strVer(r))
+
+  Test :− version(''0.14.6.'')
+
+!  HIGH. Return the upper limit of a type, or of a type type.
+
+  high :−
+   (alt
+    (form (type cha r) cha:
+      ?typeHigh(r)),
+    (form (type num r) num:
+      ?typeHigh(r)),
+    (form (type type cha r) type cha:
+      ?typeHigh(r)),
+    (form (type type inj r) type inj:
+      ?typeHigh(r)),
+    (form (type type rej r) type rej:
+      ?typeHigh(r)))
+
+!  IS INT. Test if an object is an integer constant.
+
+  isInt :−
+   (form (obj r) bool:
+     ?intCon(r))
+
+!  SLOT. Slot type constructor.
+
+  slot :−
+   (form (type exe l, type $ r) type tup:
+     ?tuples(l, r))
+
+!  "[] ". Array type constructor.
+
+  "[] " :−
+   (alt
+    (form (type exe r) type exe:
+      ?arrays(r)),
+    (form (inj l, type exe r) type exe:
+      ?array(l, r)))
+
+!  FRAME. A linked stack of FRAMEs contains base pointers to objects visited by
+!  the garbage collector. We use ROW pointers, even though this is not strictly
+!  necessary, to make sure a garbage collector can never visit its own internal
+!  objects. NEXT points to the FRAME that follows this one. ROWS is an array of
+!  COUNT base pointers.
+
+  Frame :−
+   (tuple
+     row Frame    next,
+     int          count,
+     [0] row void rows)
+
+!  Variables used by "CATCH" and REFS below.
+
+  var int       Exception :− 0    !  Currently thrown exception.
+  var int       Thrown    :− 0    !  Previously thrown exception.
+  var row Frame FrameTop  :− nil  !  Top of FRAME stack.
+  var row Label LabelTop  :− nil  !  Top of LABEL stack.
+
+!  We now have all we need to define the rest of the prelude. Remaining equates
+!  may appear in arbitrary order.
+
+!  "&". Bitwise AND, form concatenation, form type concatenation, char prepend,
+!  char postpend, string concatenation, or tuple concatenation.
+
+  "&" :−
+   (alt
+    (form (char l, string r) string:
+      ?strPre(l, r)),
+    (form (inj l, inj r) inj:
+      ?intAnd(l, r)),
+    (form (foj l, foj r) foj:
+      ?formConc(l, r)),
+    (form (string l, char r) string:
+      ?strPost(l, r)),
+    (form (string l, string r) string:
+      ?strConc(l, r)),
+    (form (type foj l, type foj r) type foj:
+      ?typeAlts(l, r)),
+    (form (type tup l, type tup r) type tup:
+      ?typeConc(l, r)))
+
+!  "&=". Update a VAR, using bitwise AND.
+
+  "&=" :−
+   (gen (type inj lBase)
+     gen (type lBase rType)
+      form (var lBase l, rType r) void:
+       ?intAndSet(l, r))
+
+!  "*", "×". Multiplication.
+
+  "*" :−
+   (alt
+    (form (inj l, inj r) inj:
+      ?intMul(l, r)),
+    (form (rej l, rej r) rej:
+      ?realMul(l, r)))
+
+  "×" :− "*"
+
+!  "*=", "×=". Update a VAR, using multiplication.
+
+  "*=" :−
+   (alt
+    (gen (type inj lBase)
+      gen (type lBase rType)
+       form (var lBase l, rType r) void:
+        ?intMulSet(l, r)),
+    (gen (type rej lBase)
+      gen (type lBase rType)
+       form (var lBase l, rType r) void:
+        ?realMulSet(l, r)))
+
+  "×=" :− "*="
+
+!  "+". Identity, addition, or pointer offset.
+
+  "+" :−
+   (alt
+    (gen (type num rType)
+      form (rType r) rType:
+       r),
+    (form (inj l, inj r) inj:
+      ?intAdd(l, r)),
+    (form (rej l, rej r) rej:
+      ?realAdd(l, r)),
+    (gen (type exe lBase)
+      form (row lBase l, inj r) row lBase:
+       ?rowAdd(l, size(lBase) × r)))
+
+!  "+=". Update a VAR, using addition or pointer offset.
+
+  "+=" :−
+   (alt
+    (gen (type inj lBase)
+      gen (type lBase rType)
+       form (var lBase l, rType r) void:
+         ?intAddSet(l, r)),
+    (gen (type rej lBase)
+      gen (type lBase rType)
+        form (var lBase l, rType r) void:
+         ?realAddSet(l, r)),
+    (gen (type exe lBase)
+      form (var row lBase l, inj r) void:
+       ?rowAddSet(l, size(lBase) × r)))
+
+!  "-", "−". Negation, subtraction, pointer difference, or pointer offset.
+
+  "-" :−
+   (alt
+    (form (inj r) inj:
+      ?intNeg(r)),
+    (form (rej r) rej:
+      ?realNeg(r)),
+    (gen (type exe lBase)
+      form (row lBase l, inj r) row lBase:
+       ?rowSub(l, size(lBase) × r)),
+    (gen (type exe lBase)
+      gen (type lBase rBase)
+       form (row lBase l, row rBase r) inj:
+        ?rowDist(l, r)),
+    (gen (type exe rBase)
+      gen (type rBase lBase)
+       form (row lBase l, row rBase r) inj:
+        ?rowDist(l, r)),
+    (form (inj l, inj r) inj:
+      ?intSub(l, r)),
+    (form (rej l, rej r) rej:
+      ?realSub(l, r)))
+
+  "−" :− "-"
+
+!  "-=", "−=". Update a VAR, using subtraction or pointer offset.
+
+  "-=" :−
+   (alt
+    (gen (type inj lBase)
+      gen (type lBase rType)
+       form (var lBase l, rType r) void:
+        ?intSubSet(l, r)),
+    (gen (type rej lBase)
+      gen (type lBase rType)
+       form (var lBase l, rType r) void:
+        ?realSubSet(l, r)),
+    (gen (type exe lBase)
+      form (var row lBase l, inj r) void:
+       ?rowSubSet(l, size(lBase) × r)))
+
+  "−=" :− "-="
+
+!  ".". Return a slot from a tuple or a tuple type.
+
+  "." :−
+   (alt
+    (gen (type mut lType, type nom rSym)
+      gen (type rSym lSym)
+       form (var slot(lType, lSym) l, type rSym r) var lType:
+        ?rowTo(?rowAdd(?toRow(l), offset(base(type l), r)), var lType)),
+    (gen (type exe lType, type nom rSym)
+      gen (type rSym lSym)
+       form (slot(lType, lSym) l, type rSym r) lType:
+        ?rowTo(?rowAdd(?toRow(l), offset(type l, r)), lType)),
+    (gen (type mut lType, type nom rSym)
+      gen (type rSym lSym)
+       form (type var slot(lType, lSym), type rSym) type var lType:
+        var lType),
+    (gen (type mut lType, type nom rSym)
+      gen (type rSym lSym)
+       form (type var slot(var lType, lSym), type rSym) type var lType:
+        var lType),
+    (gen (type exe lType, type nom rSym)
+      gen (type rSym lSym)
+       form (type slot(lType, lSym), type rSym) type lType:
+        lType))
+
+!  "/". Division.
+
+  "/" :−
+   (alt
+    (form (inj l, inj r) inj:
+      ?intDiv(l, r)),
+    (form (rej l, rej r) rej:
+      ?realDiv(l, r)))
+
+!  "/=". Update a VAR, using division.
+
+  "/=" :−
+   (alt
+    (gen (type inj lBase)
+      gen (type lBase rType)
+       form (var lBase l, rType r) void:
+        ?intDivSet(l, r)),
+    (gen (type rej lBase)
+      gen (type lBase rType)
+       form (var lBase l, rType r) void:
+        ?realDivSet(l, r)))
+
+!  ":=". Update a VAR.
+
+  ":=" :−
+   (gen (type mut lBase)
+     gen (type lBase rType)
+      form (var lBase l, rType r) void:
+       ?varSet(l, r))
+
+!  "<". Test if one scalar is less than another.
+
+  "<" :−
+   (alt
+    (form (cha l, cha r) bool:
+      ?charLt(l, r)),
+    (form (inj l, inj r) bool:
+      ?intLt(l, r)),
+    (form (rej l, rej r) bool:
+      ?realLt(l, r)),
+    (form (null l, row exe r) bool:
+      ?rowLt(l, r)),
+    (form (row exe l, null r) bool:
+      ?rowLt(l, r)),
+    (form (string l, string r) bool:
+      comp(l, r) < 0),
+    (form (row exe l, row exe r) bool:
+      ?rowLt(l, r)))
+
+!  "< <". Test if a scalar is in an open interval.
+
+  "< <" :−
+   (alt
+    (form (cha l, cha m, cha r) bool:
+     (with m :− (past m)
+      do ?charLt(l, m) ∧ ?charLt(m, r))),
+    (form (inj l, inj m, inj r) bool:
+     (with m :− (past m)
+      do ?intLt(l, m) ∧ ?intLt(m, r))),
+    (form (rej l, rej m, rej r) bool:
+     (with m :− (past m)
+      do ?realLt(l, m) ∧ ?realLt(m, r))),
+    (form (null l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLt(l, m) ∧ ?rowLt(m, r))),
+    (form (row exe l, null m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLt(l, m) ∧ ?rowLt(m, r))),
+    (form (row exe l, row exe m, null r) bool:
+     (with m :− (past m)
+      do ?rowLt(l, m) ∧ ?rowLt(m, r))),
+    (form (string l, string m, string r) bool:
+     (with m :− (past m)
+      do comp(l, m) < 0 ∧ comp(m, r) < 0)),
+    (form (row exe l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLt(l, m) ∧ ?rowLt(m, r))))
+
+!  "< <=", "< ≤" Test if a scalar is in a half-open interval.
+
+  "< <=" :−
+   (alt
+    (form (cha l, cha m, cha r) bool:
+     (with m :− (past m)
+      do ?charLt(l, m) ∧ ?charLe(m, r))),
+    (form (inj l, inj m, inj r) bool:
+     (with m :− (past m)
+      do ?intLt(l, m) ∧ ?intLe(m, r))),
+    (form (rej l, rej m, rej r) bool:
+     (with m :− (past m)
+      do ?realLt(l, m) ∧ ?realLe(m, r))),
+    (form (null l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLt(l, m) ∧ ?rowLe(m, r))),
+    (form (row exe l, null m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLt(l, m) ∧ ?rowLe(m, r))),
+    (form (row exe l, row exe m, null r) bool:
+     (with m :− (past m)
+      do ?rowLt(l, m) ∧ ?rowLe(m, r))),
+    (form (string l, string m, string r) bool:
+     (with m :− (past m)
+      do comp(l, m) < 0 ∧ comp(m, r) ≤ 0)),
+    (form (row exe l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLt(l, m) ∧ ?rowLe(m, r))))
+
+  "< ≤" :− "< <="
+
+!  "<<", "←". Left shift.
+
+  "<<" :−
+   (form (inj l, inj r) inj:
+     ?intLsh(l, r))
+
+  "←" :− "<<"
+
+!  "<<=", "←=". Update a VAR, using left shift.
+
+  "<<=" :−
+   (form (var inj l, inj r) void:
+     ?intLshSet(l, r))
+
+  "←=" :− "<<="
+
+!  "<=", "≤". Test if one scalar is less than or equal to another.
+
+  "<=" :−
+   (alt
+    (form (cha l, cha r) bool:
+      ?charLe(l, r)),
+    (form (inj l, inj r) bool:
+      ?intLe(l, r)),
+    (form (rej l, rej r) bool:
+      ?realLe(l, r)),
+    (form (null l, row exe r) bool:
+      ?rowLe(l, r)),
+    (form (row exe l, null r) bool:
+      ?rowLe(l, r)),
+    (form (string l, string r) bool:
+      comp(l, r) ≤ 0),
+    (form (row exe l, row exe r) bool:
+      ?rowLe(l, r)))
+
+  "≤" :− "<="
+
+!  "<= <", "≤ <". Test if a scalar is in a half-open interval.
+
+  "<= <" :−
+   (alt
+    (form (cha l, cha m, cha r) bool:
+     (with m :− (past m)
+      do ?charLe(l, m) ∧ ?charLt(m, r))),
+    (form (inj l, inj m, inj r) bool:
+     (with m :− (past m)
+      do ?intLe(l, m) ∧ ?intLt(m, r))),
+    (form (rej l, rej m, rej r) bool:
+     (with m :− (past m)
+      do ?realLe(l, m) ∧ ?realLt(m, r))),
+    (form (null l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLe(l, m) ∧ ?rowLt(m, r))),
+    (form (row exe l, null m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLe(l, m) ∧ ?rowLt(m, r))),
+    (form (row exe l, row exe m, null r) bool:
+     (with m :− (past m)
+      do ?rowLe(l, m) ∧ ?rowLt(m, r))),
+    (form (string l, string m, string r) bool:
+     (with m :− (past m)
+      do comp(l, m) ≤ 0 ∧ comp(m, r) < 0)),
+    (form (row exe l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLe(l, m) ∧ ?rowLt(m, r))))
+
+  "≤ <" :− "<= <"
+
+!  "<= <=", "≤ ≤". Test if a scalar is in a closed interval.
+
+  "<= <=" :−
+   (alt
+    (form (cha l, cha m, cha r) bool:
+     (with m :− (past m)
+      do ?charLe(l, m) ∧ ?charLe(m, r))),
+    (form (inj l, inj m, inj r) bool:
+     (with m :− (past m)
+      do ?intLe(l, m) ∧ ?intLe(m, r))),
+    (form (rej l, rej m, rej r) bool:
+     (with m :− (past m)
+      do ?realLe(l, m) ∧ ?realLe(m, r))),
+    (form (null l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLe(l, m) ∧ ?rowLe(m, r))),
+    (form (row exe l, null m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLe(l, m) ∧ ?rowLe(m, r))),
+    (form (row exe l, row exe m, null r) bool:
+     (with m :− (past m)
+      do ?rowLe(l, m) ∧ ?rowLe(m, r))),
+    (form (string l, string m, string r) bool:
+     (with m :− (past m)
+      do comp(l, m) ≤ 0 ∧ comp(m, r) ≤ 0)),
+    (form (row exe l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowLe(l, m) ∧ ?rowLe(m, r))))
+
+  "≤ ≤" :− "<= <="
+
+!  "<>", "≠". Test if two scalars are unequal.
+
+  "<>" :−
+   (alt
+    (form (cha l, cha r) bool:
+      ?charNe(l, r)),
+    (form (inj l, inj r) bool:
+      ?intNe(l, r)),
+    (form (rej l, rej r) bool:
+      ?realNe(l, r)),
+    (form (null l, row exe r) bool:
+      ?rowNe(l, r)),
+    (form (row exe l, null r) bool:
+      ?rowNe(l, r)),
+    (form (string l, string r) bool:
+      comp(l, r) ≠ 0),
+    (form (row exe l, row exe r) bool:
+      ?rowNe(l, r)))
+
+  "≠" :− "<>"
+
+!  "=". Test if two scalars are equal.
+
+  "=" :−
+   (alt
+    (form (cha l, cha r) bool:
+      ?charEq(l, r)),
+    (form (inj l, inj r) bool:
+      ?intEq(l, r)),
+    (form (rej l, rej r) bool:
+      ?realEq(l, r)),
+    (form (null l, row exe r) bool:
+      ?rowEq(l, r)),
+    (form (row exe l, null r) bool:
+      ?rowEq(l, r)),
+    (form (string l, string r) bool:
+      comp(l, r) = 0),
+    (form (row exe l, row exe r) bool:
+      ?rowEq(l, r)))
+
+!  ">". Test if a scalar is greater than another.
+
+  ">" :−
+   (alt
+    (form (cha l, cha r) bool:
+      ?charGt(l, r)),
+    (form (inj l, inj r) bool:
+      ?intGt(l, r)),
+    (form (rej l, rej r) bool:
+      ?realGt(l, r)),
+    (form (null l, row exe r) bool:
+      ?rowGt(l, r)),
+    (form (row exe l, null r) bool:
+      ?rowGt(l, r)),
+    (form (string l, string r) bool:
+      comp(l, r) > 0),
+    (form (row exe l, row exe r) bool:
+      ?rowGt(l, r)))
+
+!  "> >". Test if a scalar is in an open interval.
+
+  "> >" :−
+   (alt
+    (form (cha l, cha m, cha r) bool:
+     (with m :− (past m)
+      do ?charGt(l, m) ∧ ?charGt(m, r))),
+    (form (inj l, inj m, inj r) bool:
+     (with m :− (past m)
+      do ?intGt(l, m) ∧ ?intGt(m, r))),
+    (form (rej l, rej m, rej r) bool:
+     (with m :− (past m)
+      do ?realGt(l, m) ∧ ?realGt(m, r))),
+    (form (null l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGt(l, m) ∧ ?rowGt(m, r))),
+    (form (row exe l, null m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGt(l, m) ∧ ?rowGt(m, r))),
+    (form (row exe l, row exe m, null r) bool:
+     (with m :− (past m)
+      do ?rowGt(l, m) ∧ ?rowGt(m, r))),
+    (form (string l, string m, string r) bool:
+     (with m :− (past m)
+      do comp(l, m) > 0 ∧ comp(m, r) > 0)),
+    (form (row exe l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGt(l, m) ∧ ?rowGt(m, r))))
+
+!  "> >=", "> ≥". Test if a scalar is in a half-open interval.
+
+  "> >=" :−
+   (alt
+    (form (cha l, cha m, cha r) bool:
+     (with m :− (past m)
+      do ?charGt(l, m) ∧ ?charGe(m, r))),
+    (form (inj l, inj m, inj r) bool:
+     (with m :− (past m)
+      do ?intGt(l, m) ∧ ?intGe(m, r))),
+    (form (rej l, rej m, rej r) bool:
+     (with m :− (past m)
+      do ?realGt(l, m) ∧ ?realGe(m, r))),
+    (form (null l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGt(l, m) ∧ ?rowGe(m, r))),
+    (form (row exe l, null m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGt(l, m) ∧ ?rowGe(m, r))),
+    (form (row exe l, row exe m, null r) bool:
+     (with m :− (past m)
+      do ?rowGt(l, m) ∧ ?rowGe(m, r))),
+    (form (string l, string m, string r) bool:
+     (with m :− (past m)
+      do comp(l, m) > 0 ∧ comp(m, r) ≥ 0)),
+    (form (row exe l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGt(l, m) ∧ ?rowGe(m, r))))
+
+  "> ≥" :− "> >="
+
+!  ">>", "→". Right shift.
+
+  ">>" :−
+   (form (inj l, inj r) inj:
+     ?intRsh(l, r))
+
+  "→" :− ">>"
+
+!  ">>=", "→=". Update a VAR, using right shift.
+
+  ">>=" :−
+   (form (var inj l, inj r) void:
+     ?intRshSet(l, r))
+
+  "→=" :− ">>="
+
+!  ">=", "≥". Test if a scalar is greater than or equal to another.
+
+  ">=" :−
+   (alt
+    (form (cha l, cha r) bool:
+      ?charGe(l, r)),
+    (form (inj l, inj r) bool:
+      ?intGe(l, r)),
+    (form (rej l, rej r) bool:
+      ?realGe(l, r)),
+    (form (null l, row exe r) bool:
+      ?rowGe(l, r)),
+    (form (row exe l, null r) bool:
+      ?rowGe(l, r)),
+    (form (string l, string r) bool:
+      comp(l, r) ≥ 0),
+    (form (row exe l, row exe r) bool:
+      ?rowGe(l, r)))
+
+  "≥" :− ">="
+
+!  ">= >", "≥ >". Test if a scalar is in a half-open interval.
+
+  ">= >" :−
+   (alt
+    (form (cha l, cha m, cha r) bool:
+     (with m :− (past m)
+      do ?charGe(l, m) ∧ ?charGt(m, r))),
+    (form (inj l, inj m, inj r) bool:
+     (with m :− (past m)
+      do ?intGe(l, m) ∧ ?intGt(m, r))),
+    (form (rej l, rej m, rej r) bool:
+     (with m :− (past m)
+      do ?realGe(l, m) ∧ ?realGt(m, r))),
+    (form (null l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGe(l, m) ∧ ?rowGt(m, r))),
+    (form (row exe l, null m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGe(l, m) ∧ ?rowGt(m, r))),
+    (form (row exe l, row exe m, null r) bool:
+     (with m :− (past m)
+      do ?rowGe(l, m) ∧ ?rowGt(m, r))),
+    (form (string l, string m, string r) bool:
+     (with m :− (past m)
+      do comp(l, m) ≥ 0 ∧ comp(m, r) > 0)),
+    (form (row exe l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGe(l, m) ∧ ?rowGt(m, r))))
+
+  "≥ >" :− ">= >"
+
+!  ">= >=". Test if a scalar is in a closed interval.
+
+  ">= >=" :−
+   (alt
+    (form (cha l, cha m, cha r) bool:
+     (with m :− (past m)
+      do ?charGe(l, m) ∧ ?charGe(m, r))),
+    (form (inj l, inj m, inj r) bool:
+     (with m :− (past m)
+      do ?intGe(l, m) ∧ ?intGe(m, r))),
+    (form (rej l, rej m, rej r) bool:
+     (with m :− (past m)
+      do ?realGe(l, m) ∧ ?realGe(m, r))),
+    (form (null l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGe(l, m) ∧ ?rowGe(m, r))),
+    (form (row exe l, null m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGe(l, m) ∧ ?rowGe(m, r))),
+    (form (row exe l, row exe m, null r) bool:
+     (with m :− (past m)
+      do ?rowGe(l, m) ∧ ?rowGe(m, r))),
+    (form (string l, string m, string r) bool:
+     (with m :− (past m)
+      do comp(l, m) ≥ 0 ∧ comp(m, r) ≥ 0)),
+    (form (row exe l, row exe m, row exe r) bool:
+     (with m :− (past m)
+      do ?rowGe(l, m) ∧ ?rowGe(m, r))))
+
+  "≥ ≥" :− ">= >="
+
+!  "@", "↓". Enreference an execution object.
+
+  "@" :−
+   (alt
+    (gen (type mut lType)
+      form (var [] lType l) row var lType:
+       ?rowCast(?at(l), row var lType)),
+    (gen (type exe lType)
+      form ([] lType l) row lType:
+       ?rowCast(?at(l), row lType)),
+    (gen (type exe lType)
+      form (lType l) row lType:
+       ?at(l)))
+
+  "↓" :− "@"
+
+!  "␣[]". Return an array element, a list element, or a sublist.
+
+  " []" :−
+   (alt
+    (gen (type mut lBase)
+      form (var [] lBase l, inj r) var lBase:
+       ?rowTo(?rowAdd(?toRow(l), size(lBase) × r), var lBase)),
+    (gen (type exe lBase)
+      form ([] lBase l, inj r) lBase:
+       ?rowTo(?rowAdd(?toRow(l), size(lBase) × r), lBase)),
+    (gen (type exe lBase)
+      form (row lBase l, inj r) lBase:
+       ?rowTo(?rowAdd(l, size(lBase) × r), lBase)),
+    (form (list l, inj r) obj:
+     (if isEmpty(l)
+      then error($l, "too few elements")
+      else car(?listTail(l, r)))),
+    (form (list l, inj b, inj e) list:
+      ?listSub(l, b, e)))
+
+!  "^", "↑". Dereference a pointer.
+
+  "^" :−
+   (gen (type exe lType)
+     form (row lType l) exe:
+      ?rowTo(l, lType))
+
+  "↑" :− "^"
+
+!  "␣{}". Cast chars, pointers, and numbers.
+
+  " {}" :−
+   (alt
+    (form (cha l, type cha rType) cha:
+      ?charCast(l, rType)),
+    (form (cha l, type inj rType) inj:
+      ?charCast(l, rType)),
+    (form (inj l, type cha rType) cha:
+      ?intCast(l, rType)),
+    (form (inj l, type num rType) num:
+      ?intCast(l, rType)),
+    (form (row exe l, type ref exe rType) ref exe:
+      ?rowCast(l, rType)),
+    (form (row exe l, type row exe rType) row exe:
+      ?rowCast(l, rType)),
+    (form (rej l, type num rType) num:
+      ?realCast(l, rType)))
+
+!  "|". Bitwise OR.
+
+  "|" :−
+   (form (inj l, inj r) inj:
+     ?intOr(l, r))
+
+!  "|=". Update a VAR, using bitwise OR.
+
+  "|=" :−
+   (gen (type inj lBase)
+     gen (type lBase rType)
+      form (var lBase l, rType r) void:
+       ?intOrSet(l, r))
+
+!  "~". Bitwise NOT or bitwise XOR.
+
+  "~" :−
+   (alt
+    (form (inj r) inj:
+      ?intNot(r)),
+    (form (inj l, inj r) inj:
+      ?intXor(l, r)))
+
+!  "~=". Update a VAR, using bitwise XOR.
+
+  "~=" :−
+   (gen (type inj lBase)
+     gen (type lBase rType)
+      form (var lBase l, rType r) void:
+       ?intXorSet(l, r))
+
+!  "CATCH". Establish the target for a later THROW. If BODY called THROW with a
+!  nonzero exception, then return that exception. Otherwise return 0.
+
+  "catch" :−
+   (form (exe body) int:
+    (with
+      catcher :−
+       (proc () int:
+        (with
+          var Label h
+          row Frame f :− FrameTop
+          row Label l :− LabelTop
+         do LabelTop := h↓{ref Label}
+            (if c's(int, ''sigsetjmp'': h, true) = 0
+             then body)
+            FrameTop := f
+            LabelTop := l
+            Thrown := Exception
+            Exception := 0
+            Thrown))
+     do catcher()))
+
+!  "FOR". Counting loops and wrappers.
+
+  "for" :−
+   (alt
+    (form (form () obj body, int k) void:
+     (with var int k :− (past k)
+      do (while k > 0
+          do body()
+             k −= 1))),
+    (form (form (int) obj body, int e) void:
+      "for"(body, 0, e − 1, 1)),
+    (form (form (int) obj body, int b, int e) void:
+      "for"(body, b, e, 1)),
+    (form (form (int) obj body, int b, int e, int s) void:
+     (with
+       inj     e :− (past e)
+       inj     s :− (past s)
+       var int k :− b
+      do (while (if s ≥ 0 then k ≤ e else k ≥ e)
+          do body(k)
+             k += s))),
+    (gen (type foj bodyType)
+      gen (type form (bodyType) obj wrapType)
+       form (bodyType body, wrapType wrap) obj:
+        wrap(body)))
+
+!  "MOD". Integer modulus.
+
+  "mod" :−
+   (form (inj l, inj r) inj:
+     ?intMod(l, r))
+
+!  "NOT", "¬". Boolean negation.
+
+  "not" :−
+   (form (inj r) bool:
+     ?not(r))
+
+  "¬" :− "not"
+
+!  ABS. Absolute value.
+
+  abs :−
+   (alt
+    (form (inj r) inj:
+     (with r :− (past r)
+      do (if r < 0
+          then − r
+          else r))),
+    (form (rej r) rej:
+     (with r :− (past r)
+      do (if r < 0.0
+          then − r
+          else r) + 0.0)))
+
+!  ALIGN. Return the alignment (in bytes) of an object or a type.
+
+  align :−
+   (alt
+    (form (exe r) inj:
+      ?typeAlign(type r)),
+    (form (type exe r) inj:
+      ?typeAlign(r)))
+
+!  ARGC. Return the number of command line arguments.
+
+  var int Argc
+
+  argc :−
+   (form () int:
+     Argc)
+
+!  ARGV. Return command line arguments as a row of strings.
+
+  var row string Argv
+
+  argv :−
+   (form () row string:
+     Argv)
+
+!  ARITY. Return the arity of a method or a method type.
+
+  arity :−
+   (alt
+    (form (met r) inj:
+      ?typeArity(type r)),
+    (form (type met r) inj:
+      ?typeArity(r)))
+
+!  BASE. Return the base of a type.
+
+  base :−
+   (form (type obj r) type obj:
+     ?typeBase(r))
+
+!  C'S. Evaluate C expressions, denote C types, apply C functions.
+
+  c's :−
+   (alt
+    (form (type exe l, string r) exe:
+      ?strValue(l, r)),
+    (form (string l, int m, int r) type mut:
+      ?strType(l, m, r)),
+    (form (type exe l, exe m, string r) exe:
+      ?strSlot(l, m, r)),
+    (form (type void, string m, list r) void:
+      ?strApply(void, m, r)
+      skip),
+    (form (type exe l, string m, list r) exe:
+      ?strApply(l, m, r)))
+
+!  CAR. Return the first element of a nonempty list, as in Lisp.
+
+  car :−
+   (form (list r) obj:
+     ?listCar(r))
+
+!  CDR. Return all but the first element of a nonempty list, as in Lisp.
+
+  cdr :−
+   (form (list r) list:
+     ?listCdr(r))
+
+!  COMP. Return the difference of two STRINGs.
+
+  comp :−
+   (form (string l, string r) inj:
+    (if isString(l) ∧ isString(r)
+     then ?strComp(l, r)
+     else (with
+            var string l :− (past l)
+            var string r :− (past r)
+           do (while l↑ ∧ r↑ ∧ l↑ = r↑
+               do l += 1
+                  r += 1)
+              16#FF & l↑ − 16#FF & r↑)))
+
+!  CONC. Append two lists, as in Lisp.
+
+  conc :−
+   (form (list l, list r) list:
+     ?listConc(l, r))
+
+!  CONS. Add a new element to the front of a list, as in Lisp.
+
+  cons :−
+   (form (obj l, list r) list:
+     ?listCons(l, r))
+
+!  COUNT. Return the number of CHAR1s in a string (compare LENGTH).
+
+  count :−
+   (form (string r) inj:
+    (if isString(r)
+     then ?strLen1(r)
+     else (with
+            var int    l :− 0
+            var string r :− (past r)
+           do (while r↑
+               do l += (r↑ ≥ −64)
+                  r += 1)
+              l)))
+
+!  DEBUG. Display an object during debugging.
+
+  debug :−
+   (form (string l, obj r) obj:
+     ?debug(l, r))
+
+!  DEVAR. Return a type without its VAR prefix.
+
+  devar :−
+   (alt
+    (form (type mut r) type mut:
+      r),
+    (gen (type mut r)
+      form (type var r) type mut:
+       r))
+
+!  ENUM. Return a form that returns the next constant integer in a series.
+
+  enum :−
+   (with
+     isInt :−
+      (form (inj k, type $ s) bool:
+       (if isInt(k)
+        then true
+        else error(s, "constant expected")
+             false))
+     makeEnum :−
+      (form (inj b, inj e, inj s) form () inj:
+       (with
+         c :− ?cellMake(b)
+         "≼" :− (if s > 0 then "≤" else "≥")
+        do (form () inj:
+            (if ?cellGet(c) ≼ e
+             then ?cellGet(c) also ?cellSet(c, ?cellGet(c) + s)
+             else error($, "out of range")
+                  e))))
+    do (alt
+        (form () form () inj:
+          makeEnum(0, high(int), 1)),
+        (form (inj e) form () inj:
+         (if isInt(e, $e)
+          then makeEnum(0, e − 1, 1)
+          else (form () inj: 0))),
+        (form (inj b, inj e) form () inj:
+         (if isInt(b, $b) & isInt(e, $e)
+          then makeEnum(b, e, 1)
+          else (form () inj: 0))),
+        (form (inj b, inj e, inj s) form () inj:
+         (if isInt(b, $b) & isInt(e, $e) & isInt(s, $s)
+          then makeEnum(b, e, s)
+          else (form () inj: 0)))))
+
+!  ERROR. Assert that a transformation error has occurred.
+
+  error :−
+   (alt
+    (form (list l, inj r) void:
+      ?listErr(l, r)),
+    (form (type $ l, inj r) void:
+      ?symErr(l, r)))
+
+!  EXCEPT. Return a distinct INJ constant greater than 0.
+
+  except :− enum(1, high(int))
+
+!  EXIT. Stop execution and pass an exception E to the OS.
+
+  exit :−
+   (alt
+    (form () void:
+      exit(0)),
+    (form (int e) void:
+      ?strExcept(''exit'': e)
+      skip))
+
+!  FLATTEN. Flatten a list.
+
+  flatten :−
+   (form (list l) list:
+     ?listFlat(l))
+
+!  HALT. Stop transformation.
+
+  halt :−
+   (form () void:
+     ?halt())
+
+!  IS CHAR. Test if an object is a character constant.
+
+  isChar :−
+   (form (obj r) bool:
+     ?charCon(r))
+
+!  IS COTYPE. Test if a type coerces to another.
+
+  isCotype :−
+   (form (type obj l, type obj r) bool:
+     ?typeCotype(l, r))
+
+  "⊑" :− isCotype
+
+!  IS EMPTY. Test if a list or string is empty.
+
+  isEmpty :−
+   (alt
+    (form (list r) bool:
+      ?listNull(r)),
+    (form (string r) bool:
+     (if isString(r)
+      then r = ϵ
+      else r↑ = '\0')))
+
+!  IS ERROR. Test if an integer constant is a user error code.
+
+  isError :−
+   (form (inj r) bool:
+     ?intErr(r))
+
+!  IS JOKED. Test if a type contains jokers.
+
+  isJoked :−
+   (form (type obj r) bool:
+     ?typeJoked(r))
+
+!  IS NULL. Test if an object is the constant NIL.
+
+  isNull :−
+   (form (obj r) bool:
+     ?rowNil(r))
+
+!  IS REAL. Test if an object is a real constant.
+
+  isReal :−
+   (form (obj r) bool:
+     ?realCon(r))
+
+!  IS SKOLEM. Test if a type is a Skolem type.
+
+  isSkolem :−
+   (form (type obj r) bool:
+     ?typeSko(r))
+
+!  IS STRING. Test if an object is a string constant.
+
+  isString :−
+   (form (obj r) bool:
+     ?strCon(r))
+
+!  IS SUBSUMED, "≼". Test if a form type is subsumed by another.
+
+  isSubsumed :−
+   (form (type foj l, type foj r) bool:
+     ?typeSubsume(l, r))
+
+  "≼" :− isSubsumed
+
+!  IS SUBTYPE, "⊆". Test if a type is a subtype of another.
+
+  isSubtype :−
+   (form (type obj l, type obj r) bool:
+     ?typeSubtype(l, r))
+
+  "⊆" :− isSubtype
+
+!  IS UNION. Test if a type has at least one nontrivial subtype.
+
+! isUnion :−
+!  (form (type obj r) bool:
+!    ?typeUnion(r))
+
+!  LENGTH. Return the length of an array, an array type, or a list. Also return
+!  the number of CHAR0's in a string (compare COUNT).
+
+  length :−
+   (alt
+    (form (type [] exe r) inj:
+      ?typeLen(r)),
+    (gen (type [] exe r)
+      form (type var r) inj:
+       ?typeLen(r)),
+    (form ([] exe r) inj:
+      ?typeLen(type r)),
+    (form (list r) inj:
+      ?listLen(r)),
+    (form (string r) inj:
+     (if isString(r)
+      then ?strLen0(r)
+      else (with
+             var int    l :− 0
+             var string r :− (past r)
+            do (while r↑
+                do l += 1
+                   r += 1)
+               l))))
+
+!  LOW. Return the lower limit of a type, or of a type type.
+
+  low :−
+   (alt
+    (form (type cha r) cha:
+      ?typeLow(r)),
+    (form (type num r) num:
+      ?typeLow(r)),
+    (form (type type cha r) type cha:
+      ?typeLow(r)),
+    (form (type type inj r) type inj:
+      ?typeLow(r)),
+    (form (type type rej r) type rej:
+      ?typeLow(r)))
+
+!  MAX. Return the maximum of two integers or two reals.
+
+  max :−
+   (alt
+    (form (inj l, inj r) inj:
+     (with
+       inj l :− (past l)
+       inj r :− (past r)
+      do (if l > r
+          then l
+          else r))),
+    (form (rej l, rej r) inj:
+     (with
+       rej l :− (past l)
+       rej r :− (past r)
+      do (if l > r
+          then l
+          else r))))
+
+!  MIN. Return the minimum of two integers or two reals.
+
+  min :−
+   (alt
+    (form (inj l, inj r) inj:
+     (with
+       inj l :− (past l)
+       inj r :− (past r)
+      do (if l < r
+          then l
+          else r))),
+    (form (rej l, rej r) inj:
+     (with
+       rej l :− (past l)
+       rej r :− (past r)
+      do (if l < r
+          then l
+          else r))))
+
+!  OFFSET. Return the byte offset of a given slot in a tuple or a tuple type.
+
+  offset :−
+   (alt
+    (gen (type nom rSym)
+      gen (type rSym lSym)
+       form (type slot(exe, lSym) l, type rSym r) inj:
+        ?typeOffset(l, r)),
+    (gen (type nom rSym)
+      gen (type rSym lSym)
+       form (type var slot(exe, lSym) l, type rSym r) inj:
+        offset(base(l), r)),
+    (gen (type nom rSym)
+      gen (type rSym lSym)
+       form (slot(exe, lSym) l, type rSym r) inj:
+        offset(type l, r)))
+
+!  REFS. Iterator for the mark phase of a garbage collector.
+
+  refs :−
+   (gen (type tup markable)
+     gen (type markable marked)
+      form (type markable, type marked) foj:
+       (if isJoked(marked)
+        then error($marked, "non joker type expected")
+             (form (foj) void: skip)
+        else if ?typeMark(markable)
+             then (form (form (row marked) obj body) void:
+                   (with var row Frame f :− FrameTop
+                    do (while f ≠ nil
+                        do (for int k in f↑.count
+                            do (with p :− f↑.rows[k]{ref marked}
+                                do (if p ≠ nil
+                                    then body(p))))
+                           f := f↑.next)))
+             else error($, "unexpected call")
+                  (form (foj) void: skip)))
+
+!  RETHROW. Throw the most recently thrown exception again. Throw 0 if there is
+!  no such exception.
+
+  rethrow :−
+   (form () void:
+     throw(Thrown))
+
+!  SIZE. Return the byte size of an object or a type.
+
+  size :−
+   (alt
+    (form (exe r) inj:
+      ?typeSize(type r)),
+    (form (type exe r) inj:
+      ?typeSize(r)),
+    (form (obj) inj:
+      −1))
+
+!  SORT. Sort a list in nondecreasing order according to a Boolean form.
+
+  sort :−
+   (form (form (obj, obj) bool l, list r) list:
+     ?listSort(l, r))
+
+!  THROW. Return R from the most recently executing CATCH. If there is no CATCH
+!  to return from, then halt the program and pass R to the OS.
+
+  throw :−
+   (alt
+    (form () void:
+      throw(0)),
+    (form (int r) void:
+      Exception := r
+      (if LabelTop = nil
+       then ?strExcept(''exit'': Exception)
+       else ?strExcept(''siglongjmp'': LabelTop↑, true))))
+
+!  THROWN. Return the most recently thrown exception. Return 0 if no exceptions
+!  have been thrown yet.
+
+  thrown :−
+   (form () int:
+     Thrown)
+)

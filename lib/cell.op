@@ -1,0 +1,178 @@
+!
+!  ORSON/LIB/CELL. Operations on cells.
+!
+!  Copyright © 2018 James B. Moen.
+!
+!  This  program is free  software: you  can redistribute  it and/or  modify it
+!  under the terms  of the GNU General Public License as  published by the Free
+!  Software Foundation,  either version 3 of  the License, or  (at your option)
+!  any later version.
+!
+!  This program is distributed in the  hope that it will be useful, but WITHOUT
+!  ANY  WARRANTY;  without even  the  implied  warranty  of MERCHANTABILITY  or
+!  FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU General  Public License for
+!  more details.
+!
+!  You should have received a copy of the GNU General Public License along with
+!  this program.  If not, see <http://www.gnu.org/licenses/>.
+!
+
+!  CELLs are transformation objects that act much like variables. Each CELL has
+!  a type and a value, both of which may be changed by assignment. The value of
+!  a cell must be a constant or a type. In principle, the hooks used here could
+!  assign any object to a CELL. However, this is prohibited because assigning a
+!  variable to a cell can crash the Orson compiler in some cases.
+
+(prog
+
+!  Make sure we have the right version.
+
+  Test :− version(''0.14.6.'')
+
+!  CELL. The type of a cell.
+
+  cell :− ?cell()
+
+!  MAKE ASSIGNER. Return a form that accepts a cell and a constant of type T as
+!  its arguments. It assigns the type and value of the constant to the cell.
+
+  MakeAssigner :−
+   (form (type obj t, form (obj) bool isT) foj:
+    (form (cell l, t r) void:
+     (if isT(r)
+      then ?cellSet(l, r)
+      else error($r, "constant expected"))))
+
+!  MAKE MAKER. Return a form that accepts a constant of type T as its argument.
+!  It returns a cell whose initial type and value is that of the constant.
+
+  MakeMaker :−
+   (form (type obj t, form (obj) bool isT) foj:
+    (form (t r) cell:
+     (if isT(r)
+      then ?cellMake(r)
+      else error($r, "constant expected"))))
+
+!  MAKE UPDATER. Return a form which accepts two arguments: a cell, whose value
+!  is a constant of type T, and a constant of type T. The form updates the cell
+!  using the operator "∘" and the constant.
+
+  MakeUpdater :−
+   (gen (type obj tType)
+     gen (type form (tType, tType) tType oType)
+      form (type tType t, form (obj) bool isT, oType "∘") foj:
+       (form (cell l, t r) void:
+        (if isT(l↑) ∧ isT(r)
+         then l := l↑ ∘ r
+         else (if ¬ isT(l↑)
+               then error($l, "unexpected object"))
+              (if ¬ isT(r)
+               then error($r, "constant expected")))))
+
+!  MAKE CELL. Return a new cell whose initial type and value is that of a given
+!  constant. The initial type and value default to VOID and SKIP.
+
+  makeCell :−
+   (alt
+    (form () cell:
+      ?cellMake(skip)),
+    MakeMaker(cha, isChar),
+    MakeMaker(inj, isInt),
+    MakeMaker(rej, isReal),
+    MakeMaker(string, isString),
+    (form (type obj r) cell:
+      ?cellMake(r)))
+
+!  "&=". Update an INJ-valued cell using bitwise AND, or update a string-valued
+!  cell using character or string concatenation.
+
+  "&=" :−
+   (alt
+    (form (cell l, char r) void:
+     (if isString(l↑) ∧ isChar(r)
+      then l := l↑ & r
+      else (if ¬ isString(l↑)
+            then error($l, "unexpected object"))
+           (if ¬ isChar(r)
+            then error($r, "constant expected")))),
+    MakeUpdater(inj, isInt, "&"),
+    (form (cell l, string r) void:
+     (if (isChar(l↑) ∨ isString(l↑)) ∧ isString(r)
+      then l := l↑ & r
+      else (if ¬ isChar(l↑) ∧ ¬ isString(l↑)
+            then error($l, "unexpected object"))
+           (if ¬ isString(r)
+            then error($r, "constant expected")))))
+
+!  "*=", "×=". Update an INJ- or REJ-valued cell using multiplication.
+
+  StarEqual :−
+   (alt
+     MakeUpdater(inj, isInt, "*"),
+     MakeUpdater(rej, isReal, "*"))
+
+  "*=" :− StarEqual
+  "×=" :− StarEqual
+
+!  "+=". Update an INJ- or REJ-valued cell using addition.
+
+  "+=" :−
+   (alt
+     MakeUpdater(inj, isInt, "+"),
+     MakeUpdater(rej, isReal, "+"))
+
+!  "-=", "−=". Update an INJ- or REJ-valued cell using subtraction.
+
+  DashEqual :−
+   (alt
+     MakeUpdater(inj, isInt, "−"),
+     MakeUpdater(rej, isReal, "−"))
+
+  "-=" :− DashEqual
+  "−=" :− DashEqual
+
+!  "/=". Update an INJ- or REJ-valued cell using division.
+
+  "/=" :−
+   (alt
+    (form (cell l, inj r) void:
+     (if isInt(l↑) ∧ isInt(r)
+      then (if r = 0
+            then error($r, "division by zero")
+            else l := l↑ / r)
+      else (if ¬ isInt(l↑)
+            then error($l, "unexpected object"))
+           (if ¬ isInt(r)
+            then error($r, "constant expected")))),
+    MakeUpdater(rej, isReal, "/"))
+
+!  ":=". Assign a type and value to a cell. The type and value may be that of a
+!  character constant, an integer constant, a real constant, a string constant,
+!  or a type.
+
+  ":=" :−
+   (alt
+     MakeAssigner(cha, isChar),
+     MakeAssigner(inj, isInt),
+     MakeAssigner(rej, isReal),
+     MakeAssigner(string, isString),
+     (form (cell l, type obj r) void:
+       ?cellSet(l, r)))
+
+!  "|=". Update an INJ-valued cell using bitwise OR.
+
+  "|=" :− MakeUpdater(inj, isInt, "|")
+
+!  "~=". Update an INJ-valued cell using bitwise exclusive OR.
+
+  "~=" :− MakeUpdater(inj, isInt, "~")
+
+!  "^", "↑". Return the type and value of a cell.
+
+  Uparrow :−
+   (form (cell r) obj:
+     ?cellGet(r))
+
+  "^" :− Uparrow
+  "↑" :− Uparrow
+)

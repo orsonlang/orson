@@ -1,0 +1,50 @@
+!
+!  ORSON/LIB/ENVIRON. Communicate with the operating system.
+!
+!  Copyright © 2018 James B. Moen.
+!
+!  This  program is free  software: you  can redistribute  it and/or  modify it
+!  under the terms  of the GNU General Public License as  published by the Free
+!  Software Foundation,  either version 3 of  the License, or  (at your option)
+!  any later version.
+!
+!  This program is distributed in the  hope that it will be useful, but WITHOUT
+!  ANY  WARRANTY;  without even  the  implied  warranty  of MERCHANTABILITY  or
+!  FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU General  Public License for
+!  more details.
+!
+!  You should have received a copy of the GNU General Public License along with
+!  this program.  If not, see <http://www.gnu.org/licenses/>.
+!
+
+!  These forms are false beards that hide GETENV, SETENV, and UNSETENV. See the
+!  relevant Unix "man" pages for more information. They return constant strings
+!  during transformation, NOT during execution.
+
+(prog
+
+!  Make sure we have the right version.
+
+  Test :− version(''0.14.6.'')
+
+!  ENV GET. Get the string associated with KEY in the OS environment.
+
+  envGet :−
+   (form (string key) string:
+     ?envGet(key))
+
+!  ENV HAS. Test if KEY is a key in the OS environment.
+
+  envHas :−
+   (form (string key) bool:
+     ?envHas(key))
+
+!  ENV SET. Delete KEY from the OS environment, or associate KEY with VALUE.
+
+  envSet :−
+   (alt
+    (form (string key) void:
+      ?envDel(key)),
+    (form (string key, string value) void:
+      ?envSet(key, value)))
+)

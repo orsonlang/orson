@@ -1,0 +1,554 @@
+<!-- Created by Bracy 0.4 on Saturday, January 27, 2018 at 3:11 PM CST -->
+<html>
+ <head>
+  <title>
+   GNU C Sources for the Orson Library
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black;
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>G<small>NU</small> C Sources for the Orson Library</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   January 27, 2018
+  </p>
+  <blockquote>
+   <p align="justify">
+    Take a header into the sea.
+   </p>
+   <p align="right">
+    <a href="#sen2002">
+     [<small>SEN</small> 2002]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   This directory contains many small G<small>NU</small> C source files
+   <a href="#sta2008">
+    [<small>STA</small> 2008]
+   </a>
+   that help implement parts of the Orson library
+   <a href="#moe2017">
+    [<small>MOE</small> 2017].
+   </a>
+   Most have only <tt>include</tt> directives that insert header files
+   from the G<small>NU</small> C library
+   <a href="#loo2014">
+    [<small>LOO</small> 2014].
+   </a>
+   However, the file <tt>widths.c</tt> initializes some large arrays,
+   which can&rsquo;t be done efficiently by the current version of Orson.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="dirent.c">
+        <tt>dirent.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>dirent.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="errno.c">
+        <tt>errno.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>errno.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="locale.c">
+        <tt>locale.c&nbsp;&nbsp;&nbsp;</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>locale.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="math.c">
+        <tt>math.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>math.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="pwd.c">
+        <tt>pwd.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>pwd.c</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="setjmp.c">
+        <tt>setjmp.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>setjmp.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="signal.c">
+        <tt>signal.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>signal.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="stat.c">
+        <tt>stat.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>sys/stat.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="stdio.c">
+        <tt>stdio.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>stdio.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="stdlib.c">
+        <tt>stdlib.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>stdlib.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="string.c">
+        <tt>string.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>string.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="time.c">
+        <tt>time.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>sys/timeb.h</tt> and <tt>time.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="types.c">
+        <tt>types.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>sys/types.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="unistd.c">
+        <tt>unistd.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>unistd.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="wchar.c">
+        <tt>wchar.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Include <tt>wchar.h</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="widths.c">
+        <tt>widths.c</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Tables of character widths.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   The following files contain documentation and other supporting material.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./README">
+        <tt>README</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Short text version of <tt>Readme.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./Readme.by">
+        <tt>Readme.by</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Bracy source for <tt>Readme.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./Readme.html">
+        <tt>Readme.html</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       What you&rsquo;re reading now.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   These files are available for free, under the terms of the
+   G<small>NU</small> General Public License (<small>GPL</small>)
+   version 3, so they may be used by free Orson programs. People bothered by
+   this are invited to make their Orson programs free, or to write their own
+   libraries. The file <tt>widths.c</tt> has the usual
+   G<small>NU</small> copyright notice, but the other C sources do not,
+   because it seems silly to put such notices in files with only one or two
+   lines.
+  </p>
+  <hr />
+  <p align="center">
+   <b>References.</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="loo2014">
+      </a>
+      [<small>LOO</small>&nbsp;2014]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Sandra Loosemore, Richard M. Stallman, Roland McGrath, Andrew Oram,
+      Ulrich Drepper. <i>The G<small>NU</small> C Library Reference
+      Manual.</i> Free Software Foundation. Boston, Massachusetts. 2014.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2017">
+      </a>
+      [<small>MOE</small>&nbsp;2017]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. Revised&#8315;&#185; Report on the Algorithmic Language
+      Orson.&rsquo;&rsquo; Unpublished Technical Report. 2017.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="sen2002">
+      </a>
+      [<small>SEN</small>&nbsp;2002]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Martin Sennebogen, Kerstin Huber, Marco K&#246;stler, Bernhard Frank,
+      Mario Melzer (Moodorama). <i>Sweet Toffee.</i> Audio CD. Audiopharm.
+      Hannover, Germany. 2002.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="sta2008">
+      </a>
+      [<small>STA</small>&nbsp;2008]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Richard M. Stallman, the G<small>CC</small> Developer Community.
+      &lsquo;&lsquo;Using and Porting the G<small>NU</small> Compiler
+      Collection.&rsquo;&rsquo; Free Software Foundation. Boston,
+      Massachusetts. 2008.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

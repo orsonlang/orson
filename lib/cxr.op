@@ -1,0 +1,140 @@
+!
+!  ORSON/LIB/CXR. Compositions of CARs and CDRs.
+!
+!  Copyright © 2018 James B. Moen.
+!
+!  This  program is free  software: you  can redistribute  it and/or  modify it
+!  under the terms  of the GNU General Public License as  published by the Free
+!  Software Foundation,  either version 3 of  the License, or  (at your option)
+!  any later version.
+!
+!  This program is distributed in the  hope that it will be useful, but WITHOUT
+!  ANY  WARRANTY;  without even  the  implied  warranty  of MERCHANTABILITY  or
+!  FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU General  Public License for
+!  more details.
+!
+!  You should have received a copy of the GNU General Public License along with
+!  this program.  If not, see <http://www.gnu.org/licenses/>.
+!
+
+(prog
+
+!  Make sure we have the right version.
+
+  Test :− version(''0.14.6.'')
+
+!  Define all compositions of two, three, and four CARs and CDRs. These equates
+!  were generated automatically by the library program MAKECXR.OS.
+
+  caar :−
+   (form (list r) obj:
+     ?listCar(?listCar(r)))
+
+  cadr :−
+   (form (list r) obj:
+     ?listCar(?listCdr(r)))
+
+  cdar :−
+   (form (list r) obj:
+     ?listCdr(?listCar(r)))
+
+  cddr :−
+   (form (list r) obj:
+     ?listCdr(?listCdr(r)))
+
+  caaar :−
+   (form (list r) obj:
+     ?listCar(?listCar(?listCar(r))))
+
+  caadr :−
+   (form (list r) obj:
+     ?listCar(?listCar(?listCdr(r))))
+
+  cadar :−
+   (form (list r) obj:
+     ?listCar(?listCdr(?listCar(r))))
+
+  caddr :−
+   (form (list r) obj:
+     ?listCar(?listCdr(?listCdr(r))))
+
+  cdaar :−
+   (form (list r) obj:
+     ?listCdr(?listCar(?listCar(r))))
+
+  cdadr :−
+   (form (list r) obj:
+     ?listCdr(?listCar(?listCdr(r))))
+
+  cddar :−
+   (form (list r) obj:
+     ?listCdr(?listCdr(?listCar(r))))
+
+  cdddr :−
+   (form (list r) obj:
+     ?listCdr(?listCdr(?listCdr(r))))
+
+  caaaar :−
+   (form (list r) obj:
+     ?listCar(?listCar(?listCar(?listCar(r)))))
+
+  caaadr :−
+   (form (list r) obj:
+     ?listCar(?listCar(?listCar(?listCdr(r)))))
+
+  caadar :−
+   (form (list r) obj:
+     ?listCar(?listCar(?listCdr(?listCar(r)))))
+
+  caaddr :−
+   (form (list r) obj:
+     ?listCar(?listCar(?listCdr(?listCdr(r)))))
+
+  cadaar :−
+   (form (list r) obj:
+     ?listCar(?listCdr(?listCar(?listCar(r)))))
+
+  cadadr :−
+   (form (list r) obj:
+     ?listCar(?listCdr(?listCar(?listCdr(r)))))
+
+  caddar :−
+   (form (list r) obj:
+     ?listCar(?listCdr(?listCdr(?listCar(r)))))
+
+  cadddr :−
+   (form (list r) obj:
+     ?listCar(?listCdr(?listCdr(?listCdr(r)))))
+
+  cdaaar :−
+   (form (list r) obj:
+     ?listCdr(?listCar(?listCar(?listCar(r)))))
+
+  cdaadr :−
+   (form (list r) obj:
+     ?listCdr(?listCar(?listCar(?listCdr(r)))))
+
+  cdadar :−
+   (form (list r) obj:
+     ?listCdr(?listCar(?listCdr(?listCar(r)))))
+
+  cdaddr :−
+   (form (list r) obj:
+     ?listCdr(?listCar(?listCdr(?listCdr(r)))))
+
+  cddaar :−
+   (form (list r) obj:
+     ?listCdr(?listCdr(?listCar(?listCar(r)))))
+
+  cddadr :−
+   (form (list r) obj:
+     ?listCdr(?listCdr(?listCar(?listCdr(r)))))
+
+  cdddar :−
+   (form (list r) obj:
+     ?listCdr(?listCdr(?listCdr(?listCar(r)))))
+
+  cddddr :−
+   (form (list r) obj:
+     ?listCdr(?listCdr(?listCdr(?listCdr(r)))))
+)

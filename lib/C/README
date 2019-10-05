@@ -1,0 +1,39 @@
+                      GNU C Sources for the Orson Library
+
+                                 James B. Moen
+                                January 26, 2018
+
+This directory contains many small GNU C source files that help implement parts
+of  the Orson library.  Most have  only INCLUDE  directives that  insert header
+files  from the GNU  C library.   However, the  file WIDTHS.C  initializes some
+large arrays, which can’t be done efficiently by the current version of Orson.
+
+    dirent.c      Include dirent.h.
+    errno.c       Include errno.h.
+    locale.c      Include locale.h.
+    math.c        Include math.h.
+    pwd.c         Include pwd.c.
+    setjmp.c      Include setjmp.h.
+    signal.c      Include signal.h.
+    stat.c        Include sys/stat.h.
+    stdio.c       Include stdio.h.
+    stdlib.c      Include stdlib.h.
+    string.c      Include string.h.
+    time.c        Include sys/timeb.h and time.h.
+    types.c       Include sys/types.h.
+    unistd.c      Include unistd.h.
+    wchar.c       Include wchar.h.
+    widths.c      Tables of character widths.
+
+The following files contain documentation and other supporting material.
+
+    README        What you're reading now.
+    Readme.by     Bracy source for Readme.html.
+    Readme.html   Long HTML version of README.
+
+These files are  available for free, under the terms of  the GNU General Public
+License (GPL)  version 3, so  they may be  used by free Orson  programs. People
+bothered by  this are invited  to make their  Orson programs free, or  to write
+their own libraries. The file WIDTHS.C  has the usual GNU copyright notice, but
+the other C sources do not, because it seems silly to put such notices in files
+with only one or two lines.

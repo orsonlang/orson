@@ -93,7 +93,7 @@ install: $(target)
 	cp doc/orson.1 $(mandir)
 	chown root $(mandir)/orson.1
 	chmod go-wx+r $(mandir)/orson.1
-	cp -r ../lib/* $(libdir)
+	cp -r lib/* $(libdir)
 	chmod go-wx+r $(libdir)/*
 	chmod go+x $(libdir)/C
 	chmod go-wx+r $(libdir)/C/*

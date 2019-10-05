@@ -1,0 +1,181 @@
+!
+!  ORSON/LIB/STRING. Operations on strings.
+!
+!  Copyright © 2018 James B. Moen.
+!
+!  This  program is free  software: you  can redistribute  it and/or  modify it
+!  under the terms  of the GNU General Public License as  published by the Free
+!  Software Foundation,  either version 3 of  the License, or  (at your option)
+!  any later version.
+!
+!  This program is distributed in the  hope that it will be useful, but WITHOUT
+!  ANY  WARRANTY;  without even  the  implied  warranty  of MERCHANTABILITY  or
+!  FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU General  Public License for
+!  more details.
+!
+!  You should have received a copy of the GNU General Public License along with
+!  this program.  If not, see <http://www.gnu.org/licenses/>.
+
+(load ''lib.break'')     !  Terminate an iterator.
+(load ''lib.char'')      !  Operations on characters.
+(load ''lib.decode'')    !  Decode a string to a series of chars.
+(load ''lib.sequence'')  !  Iterators that transform to sequences.
+
+(prog
+
+!  Make sure we have the right version.
+
+  Test :− version(''0.14.6.'')
+
+!  "␣{}". Return a CHAR1 at an index in a STRING or a substring from a constant
+!  string. Getting the Jth CHAR1 of a STRING takes time proportional to J, as a
+!  result of the UTF-8 encoding.
+
+  " {}" :−
+   (alt
+    (form (string l, inj r) char1:
+     (if isString(l)
+      then ?strChar(l, r)
+      else Index(l, r))),
+    (form (string l, inj b, inj e) string:
+      ?strSub(l, b, e)))
+
+!  ELEMENTS. Iterator. Call BODY on each char from a STRING S, in left to right
+!  order. It may be halted by calling its breaker. ELEMENTS may be used several
+!  different ways. The first way simply visits each CHAR0 of S, as in 1970's C.
+
+  elements :−
+   (form (string s) foj:
+    (alt
+     (form (form (char0) obj body) obj:
+      (with var string s :− (past s)
+       do (while s↑
+           do (with char0 e :− s↑
+               do body(e)
+                  s += 1)))),
+     (form (form (breaker(), char0) obj body) obj:
+      (with
+        var bool   g :− true
+        var string s :− (past s)
+       do (while g ∧ s↑
+           do (with char0 e :− s↑
+               do body(makeBreaker(g), e)
+                  s += 1)))),
+
+!  The second way visits each CHAR1 of S.
+
+     (form (form (char1) obj body) obj:
+      (with var string s :− (past s)
+       do (while s↑
+           do (for char1 c, string s' in decoded(s)
+               do body(c)
+                  s := s')))),
+     (form (form (breaker(), char1) obj body) obj:
+      (with
+        var bool   g :− true
+        var string s :− (past s)
+       do (while g ∧ s↑
+           do (for char1 c, string s' in decoded(s)
+               do body(makeBreaker(g), c)
+                  s := s')))),
+
+!  The third visits every substring of CHAR0's from S which represents a CHAR1.
+!  The substrings exist only while ELEMENTS is running.
+
+     (form (form (string) obj body) obj:
+      (with var string s :− (past s)
+       do (while s↑
+           do (for string c, string s' in decoded(s)
+               do body(c)
+                  s := s')))),
+     (form (form (breaker(), string) obj body) obj:
+      (with
+        var bool      g :− true
+        var string    s :− (past s)
+       do (while g ∧ s↑
+           do (for string c, string s' in decoded(s)
+               do body(makeBreaker(g), c)
+                  s := s'))))))
+
+!  IS END. Test if L ends with R nontrivially. If L and R are constant STRINGs,
+!  then IS END transforms to a constant.
+
+  isEnd :−
+   (form (string l, string r) bool:
+    (with
+      inj j :− length(l)
+      inj k :− length(r)
+     do (if isString(l) ∧ isString(r)
+         then j > k ∧ l[j − k, j] = r
+         else j > k ∧ l + (j − k) = r)))
+
+!  IS START. Test if R starts with L nontrivially. If L and R are both constant
+!  STRINGs, then IS START transforms to a constant.
+
+  isStart :−
+   (form (string l, string r) bool:
+    (if isString(l) ∧ isString(r)
+     then (with inj j :− length(l)
+           do length(r) > j ∧ r[0, j] = l)
+     else (with
+            var bool   g :− true
+            var string l :− (past l)
+            var string r :− (past r)
+           do (while g ∧ l↑ ∧ r↑
+               do (if l↑ = r↑
+                   then l += 1
+                        r += 1
+                   else g := false))
+              l↑ = '\0' ∧ r↑ ∧ g)))
+
+!  INDEX. Return the Jth CHAR1 in the STRING R. The result is undefined if J is
+!  out of range. We use an algorithm similar to that of ORSON/LIB/HEADTAIL.
+
+  Index :−
+   (proc (string r, int j) char1:
+    (with
+      var int    j :− (past j)
+      var string r :− (past r)
+      var int    w
+
+!  INDEXED. Decode the first byte of R to C.
+
+      indexed :−
+       (form (int c) void:
+         w := c)
+
+!  INDEXING. Decode a series of bytes. It starts with a header byte, accessible
+!  through the mask M, and followed by K continuation bytes.
+
+      indexing :−
+       (form (int m, int k) void:
+         w := m & r↑{int}
+         indexings(k))
+
+!  INDEXINGS. Decode the K continuation bytes that follow the header byte.
+
+      indexings :−
+       (form (int k) void:
+         r += 1
+         (if k > 0
+          then (if isContinuation(r↑)
+                then w := w ← 6 | 2#00111111 & r↑{int}
+                     indexings(k − 1)
+                else w := 16#FFFD)))
+
+!  This is INDEX's body.
+
+     do (while j > 0
+         do j −= 1
+            r += byByte(r↑, 1, 1, 2, 3, 4, 5, 6, 1))
+        byByte(r↑,
+         indexed(r↑),
+         indexed(16#FFFD),
+         indexing(2#00011111, 1),
+         indexing(2#00001111, 2),
+         indexing(2#00000111, 3),
+         indexing(2#00000011, 4),
+         indexing(2#00000001, 5),
+         indexed(16#FFFD))
+        w{char}))
+)

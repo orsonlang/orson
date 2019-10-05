@@ -1,0 +1,174 @@
+{title GNU C Sources for the Orson Library}
+
+{center
+  {b {c Gnu} C Sources for the Orson Library}
+
+  James B. Moen
+  January 27, 2018}
+
+{narrow
+ {justify
+   Take a header into the sea.}
+ {right
+  {goto sen2002 {c [sen 2002]}}}}
+
+{justify
+  This directory contains many small {c Gnu} C source files
+  {goto sta2008 {c [sta 2008]}} that help implement parts of the Orson library
+  {goto moe2017 {c [moe 2017].}}
+  Most have only {t include} directives that insert header files from the
+  {c Gnu} C library {goto loo2014 {c [loo 2014].}}
+  However, the file {t widths.c} initializes some large arrays, which can't be
+  done efficiently by the current version of Orson.}
+
+{narrow
+ {layout
+  {row
+   {left {goto {t dirent.c}}}
+   {left \ \ \ }
+   {left Include {t dirent.h}.}}
+  {row
+   {left {goto {t errno.c}}}
+   {left \ \ \ }
+   {left Include {t errno.h}.}}
+  {row
+   {left {goto locale.c {t locale.c\ \ \ }}}
+   {left \ \ \ }
+   {left Include {t locale.h}.}}
+  {row
+   {left {goto {t math.c}}}
+   {left \ \ \ }
+   {left Include {t math.h}.}}
+  {row
+   {left {goto {t pwd.c}}}
+   {left \ \ \ }
+   {left Include {t pwd.c}.}}
+  {row
+   {left {goto {t setjmp.c}}}
+   {left \ \ \ }
+   {left Include {t setjmp.h}.}}
+  {row
+   {left {goto {t signal.c}}}
+   {left \ \ \ }
+   {left Include {t signal.h}.}}
+  {row
+   {left {goto {t stat.c}}}
+   {left \ \ \ }
+   {left Include {t sys/stat.h}.}}
+  {row
+   {left {goto {t stdio.c}}}
+   {left \ \ \ }
+   {left Include {t stdio.h}.}}
+  {row
+   {left {goto {t stdlib.c}}}
+   {left \ \ \ }
+   {left Include {t stdlib.h}.}}
+  {row
+   {left {goto {t string.c}}}
+   {left \ \ \ }
+   {left Include {t string.h}.}}
+  {row
+   {left {goto {t time.c}}}
+   {left \ \ \ }
+   {left Include {t sys/timeb.h} and {t time.h}.}}
+  {row
+   {left {goto {t types.c}}}
+   {left \ \ \ }
+   {left Include {t sys/types.h}.}}
+  {row
+   {left {goto {t unistd.c}}}
+   {left \ \ \ }
+   {left Include {t unistd.h}.}}
+  {row
+   {left {goto {t wchar.c}}}
+   {left \ \ \ }
+   {left Include {t wchar.h}.}}
+  {row
+   {left {goto {t widths.c}}}
+   {left \ \ \ }
+   {left Tables of character widths.}}}}
+
+{justify
+  The following files contain documentation and other supporting material.}
+
+{narrow
+ {layout
+  {row
+   {left {goto ./README {t README}}}
+   {left \ \ \ }
+   {left Short text version of {t Readme.html}.}}
+  {row
+   {left {goto ./Readme.by {t Readme.by}}}
+   {left \ \ \ }
+   {left Bracy source for {t Readme.html}.}}
+  {row
+   {left {goto ./Readme.html {t Readme.html}}}
+   {left \ \ \ }
+   {left What you're reading now.}}}}
+
+{justify
+  These files are available for free, under the terms of the {c Gnu} General
+  Public License ({c gpl}) version 3, so they may be used by free Orson
+  programs.
+  People bothered by this are invited to make their Orson programs free, or to
+  write their own libraries.
+  The file {t widths.c} has the usual {c Gnu} copyright notice, but the other
+  C sources do not, because it seems silly to put such notices in files with
+  only one or two lines.}
+
+{rule}
+
+{center {b References.}}
+
+{layout
+ {row
+  {left
+   {label loo2014}
+   {c [loo\ 2014]\ \ }}
+  {justify
+    Sandra Loosemore, Richard M. Stallman, Roland McGrath, Andrew Oram,
+    Ulrich Drepper.
+    {i The {c Gnu} C Library Reference Manual.}
+    Free Software Foundation.
+    Boston, Massachusetts.
+    2014.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2017}
+   {c [moe\ 2017]\ \ }}
+  {justify
+    James B. Moen.
+    Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished Technical Report.
+    2017.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label sen2002}
+   {c [sen\ 2002]\ \ }}
+  {justify
+    Martin Sennebogen, Kerstin Huber, Marco Köstler, Bernhard Frank, Mario
+    Melzer (Moodorama).
+    {i Sweet Toffee.}
+    Audio CD.
+    Audiopharm.
+    Hannover, Germany.
+    2002.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label sta2008}
+   {c [sta\ 2008]\ \ }}
+  {justify
+    Richard M. Stallman, the {c Gcc} Developer Community.
+    ``Using and Porting the {c Gnu} Compiler Collection.''
+    Free Software Foundation.
+    Boston, Massachusetts.
+    2008.}}}
