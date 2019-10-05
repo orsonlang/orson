@@ -1,1 +1,2 @@
-((nil . ((indent-tabs-mode . nil) (tab-width . 2))))
+((nil . ((indent-tabs-mode . nil)
+       (tab-width . 2))))
